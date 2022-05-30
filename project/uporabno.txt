@@ -1,0 +1,12 @@
+ begin ?  ≡⟨ ? ⟩ ? ≡⟨ ? ⟩ ? ∎
+
+x+a=0=x+b→a=b : {A : Ring} → (x a b : M A) → (_+ᵣ_ A) x a ≡ (e₊ A) →  (_+ᵣ_ A) x b ≡ (e₊ A) → a ≡ b 
+
+
+a+x=0=b+x→a=b : {A : Ring} → (x a b : M A) → (_+ᵣ_ A) a x ≡ (e₊ A) →  (_+ᵣ_ A) b x ≡ (e₊ A) → a ≡ b 
+x+a=x+b→a+x=b+x : {A : Ring} → (x a b : M A) → (_+ᵣ_ A) x a ≡ (_+ᵣ_ A) x b →  (_+ᵣ_ A)  a x ≡ (_+ᵣ_ A) b x 
+a+x=b+x→x+a=x+b : {A : Ring} → (x a b : M A) → (_+ᵣ_ A) a x ≡ (_+ᵣ_ A) b x →  (_+ᵣ_ A)  x a ≡ (_+ᵣ_ A) x b 
+a+x=b+x→a=b : {A : Ring} → (x a b : M A) → (_+ᵣ_ A) a x ≡  (_+ᵣ_ A) b x  → a ≡ b 
+x+a=x+b→a=b
+
+a=b→x+a=x+a : {A : Ring} →  (x a b : M A) →  a ≡ b → (A +ᵣ a) x ≡ (A +ᵣ b) x 
