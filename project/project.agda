@@ -145,6 +145,16 @@ non0ₚ x +ₚ non0ₚ y with (addp x y)
 ... | nothing = 0ₚ
 
 
+
+
+
+--///////////////////////// PROOFS FOR ADDITION /////////////////////////
++ₚ-asoc : {A : Ring} → (p q r : Poly A) → p +ₚ (q +ₚ r) ≡ (p +ₚ q) +ₚ r
++ₚ-asoc = {!   !}
+
++ₚ-comm : {A : Ring} → (a : Poly A) → (b : Poly A) → ( a +ₚ b) ≡ ( b +ₚ a)
++ₚ-comm = {!   !}
+
 --///////////////////////// MULTIPLICATION DEFINITION /////////////////////////
 kmul : {A : Ring} → (a : M A) → (x : NonZeroPoly A) → ¬ (a ≡ (e₊ A)) → (NonZeroPoly A)
 kmul {A} a (hx ∷ₚ tx) pa = ((_·_ A) a hx) ∷ₚ (kmul a tx pa)
@@ -210,7 +220,33 @@ kmulres A (x ∷ₚ p) = cong₂ _∷ₚ_ (((1ᵣ-left A) x)) (kmulres A p)
 ...             | je with je t 
 ...                   | ()
 
+e₊!=e₊→⊥ : {A : Ring} → ¬ ((A +ᵣ e₊ A) (e₊ A) ≡ e₊ A) → ⊥
+e₊!=e₊→⊥ {A} p with  (ω-left A) (e₊ A) 
+... | res with p res 
+... | () 
 
+split∷ₚ : {A : Ring} → (p q : Poly A) → (x·ₚ (p +ₚ q )) ≡ ((x·ₚ p) +ₚ (x·ₚ q)) 
+split∷ₚ {A} 0ₚ 0ₚ = refl
+split∷ₚ {A} 0ₚ (non0ₚ x) = refl
+split∷ₚ {A} (non0ₚ x) 0ₚ = refl
+split∷ₚ {A} (non0ₚ x) (non0ₚ y) with addp x y
+... | just x+y = cong non0ₚ (cong₂ _∷ₚ_ (sym ((ω-left A) (e₊ A))) refl)
+... | nothing with dec A ((A +ᵣ e₊ A) (e₊ A)) (e₊ A)
+... | yes x₁ = refl
+... | no e₊!=e₊ with e₊!=e₊→⊥ {A} e₊!=e₊
+... | ()
+
+
+rearrange1 : {A : Ring} → (a b c d : Poly A) → (a +ₚ c) +ₚ (b +ₚ d) ≡ a +ₚ ((b +ₚ c) +ₚ d)
+rearrange1 {A} a b c d = begin (a +ₚ c) +ₚ (b +ₚ d) ≡⟨ sym (+ₚ-asoc a c (b +ₚ d)) ⟩ 
+                                a +ₚ (c +ₚ (b +ₚ d)) ≡⟨ cong₂ _+ₚ_ {a} {a} {(c +ₚ (b +ₚ d))} {((c +ₚ b) +ₚ d)} refl (+ₚ-asoc c b d) ⟩
+                                a +ₚ ((c +ₚ b) +ₚ d) ≡⟨ cong₂ _+ₚ_ {a} {a} {((c +ₚ b) +ₚ d)} {((b +ₚ c) +ₚ d)} refl (cong₂ _+ₚ_ {(c +ₚ b) } {(b +ₚ c) } {d} {d} (+ₚ-comm c b) refl) ⟩ 
+                                  (a +ₚ ((b +ₚ c) +ₚ d))∎
+
+rearrange2 : {A : Ring} → (a b c d : Poly A) → (a +ₚ b) +ₚ (c +ₚ d) ≡  a +ₚ ((b +ₚ c) +ₚ d)
+rearrange2 {A} a b c d = begin (a +ₚ b) +ₚ (c +ₚ d) ≡⟨ sym (+ₚ-asoc a b (c +ₚ d)) ⟩ 
+                                a +ₚ (b +ₚ (c +ₚ d)) ≡⟨ cong₂ _+ₚ_ {a} {a} {(b +ₚ (c +ₚ d))} {((b +ₚ c) +ₚ d)} refl (+ₚ-asoc b c d) ⟩
+                                (a +ₚ ((b +ₚ c) +ₚ d)) ∎
 --multiplication commutativity
 ·ₚ-commhlp : {A : Ring} → (p : NonZeroPoly A)→ (q : NonZeroPoly A) → (·ₚ (non0ₚ p)  (non0ₚ q)) ≡ (·ₚ (non0ₚ q) (non0ₚ p))
 ·ₚ-commhlp {A} (ld a pa) (ld b pb) with  (dec A a (e₊ A)) | dec A b (e₊ A)
@@ -249,23 +285,6 @@ kmulres A (x ∷ₚ p) = cong₂ _∷ₚ_ (((1ᵣ-left A) x)) (kmulres A p)
           split_product with dec A a (e₊ A) | inspect (dec A a) (e₊ A)
           ... | no x | [ eq ] rewrite eq = cong non0ₚ (cong₂ _∷ₚ_ (sym ((e₊-right {A} ( (A · a) hb)))) refl)
 
-          -- helper :  ·ₚ (non0ₚ tb) (non0ₚ (ld a pa)) ≡ ·ₖₒₙₛₜ a (non0ₚ tb)
-          -- helper = sym switch_konst
-          
-          -- helper with dec A a (e₊ A) | inspect (dec A a) (e₊ A)
-          -- ... | no x | [ eq ] rewrite eq =  begin ·ₚ (non0ₚ tb) (non0ₚ (ld a pa)) ≡⟨ ·ₚ-commhlp  tb  (ld a pa) ⟩ ·ₚ (non0ₚ (ld a pa)) (non0ₚ tb) ≡⟨ helpersub ⟩ non0ₚ (kmul a tb x) ∎
-          
-          --   where
-          --     helpersub : (·ₖₒₙₛₜ a (non0ₚ tb)) ≡ non0ₚ (kmul a tb x)
-          --     helpersub  with dec A a (e₊ A) | inspect (dec A a) (e₊ A)
-          --     ... | no x | [ eq ] rewrite eq = refl
-
-          -- help2 : (A +ᵣ (A · a) hb) (e₊ A) ≡ (A +ᵣ (A · hb) a) (e₊ A)
-          -- help2 = begin (A +ᵣ (A · a) hb) (e₊ A)  ≡⟨ e₊-right {A} ((A · a) hb) ⟩  
-          --               (A · a) hb ≡⟨ (·-comm A) a hb ⟩ 
-          --               (A · hb) a  ≡⟨ sym (e₊-right {A} ((A · hb) a)) ⟩ 
-          --               (A +ᵣ ((A · hb) a)) (e₊ A) ∎
-
 -- begin ? ≡⟨ ? ⟩ ? ∎
 ·ₚ-commhlp {A} (x ∷ₚ a) (ld a₁ x₁) = {!   !}
 ·ₚ-commhlp {A} (a ∷ₚ x) (b ∷ₚ y) with (dec A) a (e₊ A) | (dec A) b (e₊ A) 
@@ -293,17 +312,63 @@ kmulres A (x ∷ₚ p) = cong₂ _∷ₚ_ (((1ᵣ-left A) x)) (kmulres A p)
               -- x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)) ≡ ·ₚ (non0ₚ y) (non0ₚ (e₊ A ∷ₚ x))
 ... | yes x₁ | no x₂  = {!   !}
 ... | no x₁ | yes x₂  = {!   !}
-... | no x₁ | no x₂  =  begin (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))) ≡⟨ cong₂ _+ₚ_ {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))} {x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))} refl ((cong x·ₚ ((reduction x y b)))) ⟩
-                              (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))) ≡⟨ {!   !} ⟩
-                              {!   !} ≡⟨ {!   !} ⟩
-                              ((non0ₚ ((A · b) a ∷ₚ kmul b x x₂) +ₚ x·ₚ ((·ₖₒₙₛₜ a (non0ₚ y)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x))))) ≡⟨ cong₂ _+ₚ_ {non0ₚ ((A · b) a ∷ₚ kmul b x x₂)} {non0ₚ ((A · b) a ∷ₚ kmul b x x₂)} {x·ₚ ((·ₖₒₙₛₜ a (non0ₚ y)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))} {x·ₚ (·ₚ (non0ₚ y) (non0ₚ (a ∷ₚ x)))} refl (cong x·ₚ (sym (reduction y x a))) ⟩
-                             (non0ₚ ((A · b) a ∷ₚ kmul b x x₂) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ (a ∷ₚ x)))) ∎
+... | no x₁ | no x₂  =  begin non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y))) ≡⟨ cong₂ _+ₚ_ {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))} {x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))} refl ((cong x·ₚ ( reduction1 ))) ⟩
+                              non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ y))) ≡⟨ split x y a b x₁ x₂ ⟩
+                              ((non0ₚ (ld ((A · a) b) ((nzd A) x₁ x₂))) +ₚ (non0ₚ  ((e₊ A) ∷ₚ kmul a y x₁))) +ₚ ((x·ₚ (·ₖₒₙₛₜ b (non0ₚ x))) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))) ≡⟨ rearrange2 (non0ₚ (ld ((A · a) b) ((nzd A) x₁ x₂))) (non0ₚ  ((e₊ A) ∷ₚ kmul a y x₁)) (x·ₚ (·ₖₒₙₛₜ b (non0ₚ x))) (x·ₚ (x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))) ⟩
+                              ((non0ₚ (ld ((A · a) b) ((nzd A) x₁ x₂))) +ₚ (((non0ₚ  ((e₊ A) ∷ₚ kmul a y x₁)) +ₚ (x·ₚ (·ₖₒₙₛₜ b (non0ₚ x)))) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ x) (non0ₚ y))))) ≡⟨ cong₂ _+ₚ_ {non0ₚ (ld ((A · a) b) (nzd A x₁ x₂))} {non0ₚ (ld ((A · b) a) (nzd A x₂ x₁))} {((non0ₚ (e₊ A ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₖₒₙₛₜ b (non0ₚ x))) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ x) (non0ₚ y))))} {((x·ₚ (·ₖₒₙₛₜ a (non0ₚ y)) +ₚ non0ₚ (e₊ A ∷ₚ kmul b x x₂)) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ y) (non0ₚ x))))} (cong non0ₚ (dcong₂ ld ((·-comm A) a b) refl)) final_comp ⟩
+                              (non0ₚ (ld ((A · b) a) ((nzd A) x₂ x₁))) +ₚ (((x·ₚ (·ₖₒₙₛₜ a (non0ₚ y))) +ₚ (non0ₚ  ((e₊ A) ∷ₚ kmul b x x₂))) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))) ≡⟨ sym (rearrange1 (non0ₚ (ld ((A · b) a) ((nzd A) x₂ x₁))) (x·ₚ (·ₖₒₙₛₜ a (non0ₚ y))) (non0ₚ  ((e₊ A) ∷ₚ kmul b x x₂)) (x·ₚ (x·ₚ (·ₚ (non0ₚ y) (non0ₚ x))))) ⟩
+                              ((non0ₚ (ld ((A · b) a) ((nzd A) x₂ x₁))) +ₚ (non0ₚ  ((e₊ A) ∷ₚ kmul b x x₂))) +ₚ ((x·ₚ (·ₖₒₙₛₜ a (non0ₚ y))) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))) ≡⟨ sym (split y x b a x₂ x₁) ⟩
+                              (non0ₚ ((A · b) a ∷ₚ kmul b x x₂) +ₚ x·ₚ ((·ₖₒₙₛₜ a (non0ₚ y)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))) ≡⟨ cong₂ _+ₚ_ {non0ₚ ((A · b) a ∷ₚ kmul b x x₂)} {non0ₚ ((A · b) a ∷ₚ kmul b x x₂)} {x·ₚ ((·ₖₒₙₛₜ a (non0ₚ y)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))} {x·ₚ (·ₚ (non0ₚ y) (non0ₚ (a ∷ₚ x)))} refl (cong x·ₚ (sym (reduction y x a))) ⟩
+                              non0ₚ ((A · b) a ∷ₚ kmul b x x₂) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ (a ∷ₚ x))) ∎
             where
               reduction : (u : NonZeroPoly A) → (v : NonZeroPoly A) → (t : M A) → (·ₚ (non0ₚ u) (non0ₚ (t ∷ₚ v))) ≡ (·ₖₒₙₛₜ t (non0ₚ u)) +ₚ x·ₚ (·ₚ (non0ₚ u) (non0ₚ v))
-              reduction = {!   !}
+              reduction u v t = {!   !}
+              
+              kmul_konst : (u : NonZeroPoly A) → (i : M A) → (pi : ¬ (i ≡ (e₊ A))) → non0ₚ (kmul i u pi) ≡ (·ₖₒₙₛₜ i (non0ₚ u))
+              kmul_konst u i pi with (dec A i (e₊ A)) | (inspect (dec A i) (e₊ A)) 
+              ... | no x | [ eq ]  = cong non0ₚ refl
+              ... | yes x | [ eq ] with pi x
+              ... | ()
 
-          
 
+              reduction1 :  ·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)) ≡ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ y))) 
+              reduction1 with (dec A) b (e₊ A)
+              ... | no pb  = begin ·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)) ≡⟨ {!   !} ⟩
+                                  ·ₚ (non0ₚ (b ∷ₚ y)) (non0ₚ x) ≡⟨ cong₂ _+ₚ_ {(·ₖₒₙₛₜ b (non0ₚ x))} {non0ₚ (kmul b x pb)} {x·ₚ (·ₚ (non0ₚ y) (non0ₚ x))} {x·ₚ (·ₚ (non0ₚ x) (non0ₚ y))} (sym (kmul_konst x b pb)) (cong x·ₚ (sym (·ₚ-commhlp x y))) ⟩
+                                  (non0ₚ (kmul b x pb) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))∎
+              ... | yes pb  with x₂ pb
+              ... | ()
+
+              
+              split : (u : NonZeroPoly A) → (v : NonZeroPoly A) → (i : M A) → (j : M A) → (pi : ¬ (i ≡ (e₊ A))) → (pj : ¬ (j ≡ (e₊ A))) → (non0ₚ ((A · i) j ∷ₚ kmul i v pi) +ₚ x·ₚ ((·ₖₒₙₛₜ j (non0ₚ u)) +ₚ x·ₚ (·ₚ (non0ₚ u) (non0ₚ v)))) ≡ (non0ₚ ((A +ᵣ (A · i) j) (e₊ A) ∷ₚ kmul i v pi) +ₚ (x·ₚ (·ₖₒₙₛₜ j (non0ₚ u)) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ u) (non0ₚ v)))))
+              split u v i j pi pj = cong₂ _+ₚ_ {non0ₚ ((A · i) j ∷ₚ kmul i v pi)} {non0ₚ ((A +ᵣ (A · i) j) (e₊ A) ∷ₚ kmul i v pi)} {x·ₚ ((·ₖₒₙₛₜ j (non0ₚ u)) +ₚ x·ₚ (·ₚ (non0ₚ u) (non0ₚ v)))} {x·ₚ (·ₖₒₙₛₜ j (non0ₚ u)) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ u) (non0ₚ v)))} 
+                      (merge ((A · i) j) (kmul i v pi) ((nzd A) pi pj)) (split∷ₚ  (·ₖₒₙₛₜ j (non0ₚ u)) (x·ₚ (·ₚ (non0ₚ u) (non0ₚ v))))
+
+
+              xmul_e₊ : (u : NonZeroPoly A) → non0ₚ ((e₊ A) ∷ₚ u) ≡ x·ₚ (non0ₚ u)
+              xmul_e₊ u = refl
+
+              midelement_switch1 : non0ₚ (e₊ A ∷ₚ kmul a y x₁) ≡ x·ₚ (·ₖₒₙₛₜ a (non0ₚ y))
+              midelement_switch1 with (dec A) a (e₊ A)
+              ... | no pa = refl
+              ... | yes pa with x₁ pa
+              ... | ()
+
+              midelement_switch2 : x·ₚ (·ₖₒₙₛₜ b (non0ₚ x)) ≡ non0ₚ (e₊ A ∷ₚ kmul b x x₂)
+              midelement_switch2 with (dec A) b (e₊ A)
+              ... | no pb = refl
+              ... | yes pb with x₂ pb
+              ... | ()
+
+              final_comp : ((non0ₚ (e₊ A ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₖₒₙₛₜ b (non0ₚ x))) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))) ≡ ((x·ₚ (·ₖₒₙₛₜ a (non0ₚ y)) +ₚ non0ₚ (e₊ A ∷ₚ kmul b x x₂)) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ y) (non0ₚ x))))
+              final_comp = cong₂ _+ₚ_ {non0ₚ (e₊ A ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₖₒₙₛₜ b (non0ₚ x))} {x·ₚ (·ₖₒₙₛₜ a (non0ₚ y)) +ₚ non0ₚ (e₊ A ∷ₚ kmul b x x₂)} {x·ₚ (x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))} {x·ₚ (x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))}
+               (cong₂ _+ₚ_ {non0ₚ (e₊ A ∷ₚ kmul a y x₁)} {x·ₚ (·ₖₒₙₛₜ a (non0ₚ y))} {x·ₚ (·ₖₒₙₛₜ b (non0ₚ x))} {non0ₚ (e₊ A ∷ₚ kmul b x x₂)} midelement_switch1 midelement_switch2) (cong x·ₚ (cong x·ₚ (·ₚ-commhlp x y)))
+              
+              
+
+              
+              
+--  ((non0ₚ ((A · a) b)) +ₚ (non0ₚ  ((e₊ A) ∷ₚ kmul a y x₁))) +ₚ ((x·ₚ (·ₖₒₙₛₜ b (non0ₚ x))) +ₚ x·ₚ (x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))) 
               -- reduction : (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))) ≡ (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x))))
               -- reduction with (dec A) b (e₊ A) 
               -- ... | no u = cong₂ _+ₚ_ {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))} {x·ₚ (non0ₚ (kmul b x u) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))} refl (cong x·ₚ {! ·ₚ-commhlp x (b ∷ₚ y) !})
@@ -392,26 +457,6 @@ x·ₚ-deg (x ∷ₚ a) = cong suc refl
 
 
 
-
-
---///////////////////////// PROOFS FOR ADDITION /////////////////////////
-+0-helper : {A : Ring} → (p : Poly A) → (q : Poly A) → (p +ₚ q) ≡ 0ₚ → (q +ₚ p) ≡ 0ₚ
-+0-helper {A} 0ₚ 0ₚ h = refl
-+0-helper {A}(non0ₚ p) (non0ₚ q) h with addp p q | addp q p 
-... | nothing | just x = {!    !}
-... | nothing | nothing = refl
-
-+ₚ-comm : {A : Ring} → (a : Poly A) → (b : Poly A) → ( a +ₚ b) ≡ ( b +ₚ a)
-+ₚ-comm 0ₚ 0ₚ = refl
-+ₚ-comm 0ₚ (non0ₚ x) = refl
-+ₚ-comm (non0ₚ x) 0ₚ = refl
-+ₚ-comm {A} (non0ₚ (ld a x)) (non0ₚ (ld b y)) with (addp {A} (ld a x) (ld b y)) | (addp {A}  (ld b y) (ld a x)) | dec A ((A +ᵣ b) a) (e₊ A)
-... | just (ld a₁ x₂) | r2 | yes x₁ = {!   !}
-... | just (x₂ ∷ₚ x₃) | r2 | yes x₁ = {!   !}
-... | nothing | r2 | yes x₁ = {!   !}
-... | r1 | r2 | no x₁ = {!   !} 
-+ₚ-comm (non0ₚ (ld a x)) (non0ₚ (x₁ ∷ₚ y)) = cong non0ₚ (cong₂ _∷ₚ_ refl refl)
-+ₚ-comm (non0ₚ (x ∷ₚ x₁)) (non0ₚ y) = {!   !}
 
 
 -- 1ₚ≠0ₚ : {A : Ring } → ¬  (1ₚ  ≡ 0ₚ)
@@ -553,4 +598,4 @@ t3_q : Poly ring2
 t3_q = non0ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp ))))
 test3 : (·ₚ t3_p  t3_q) ≡ non0ₚ (zeroN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ(oneN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ (ld oneN hlp)))))))
 test3 = refl
-    
+      
