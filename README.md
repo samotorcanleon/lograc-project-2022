@@ -1,12 +1,13 @@
-# Skeleton repository for the Logika v računalništvu student projects
+# Logika v računalništvu student project polynomials
 
-This repository is set up as an Agda library and it contains:
+This repository contains formalization of polynomials in agda:
 
-* `lograc-project.agda-lib`: the library configuration file which contains
-  the list of file system paths that Agda should include
+* `project/`: contains all of the agda code
 
-* `agda-stdlib/`: Agda standard library as a git submodule
+Files to look after are:
 
-* `agda-categories/`: Agda categories library as a git submodule
+* `project.agda`: Contains definition of a ring, some properties of ring, definition of Polynomials and operations + and * on them.
+In this file one can also find unfinished proof for commutativity of * on polynomials. The proof is turning out to be tedious since  
+agda forgets already computed values (like that some variable is nonzero). Rewriting does not always work (or we are doing something wrong). Additionaly 'cong' also does not act very smart, since we have to put implicit arguments to it often by force (which is annoying when we have long expressions as arguments). At the end of file is a simple example of a ring $Z_2$ and a few test cases. 
 
-* `project/`: the top-level source code directory for your Agda code
+* `noviplus2.agda`: This file contains duplicate of definitions of operations and ring. Additional ring properties are proved. Then follows proof of commutativity for + and not so succesful proof for asociativity of +.  At the end there is proof that $-_p$ operation is inverse for polynomial addition.
