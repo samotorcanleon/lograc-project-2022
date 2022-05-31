@@ -180,6 +180,9 @@ Oₚ  a = 0ₚ
 
 --///////////////////////// PROOFS FOR MULTIPLICATION /////////////////////////
 
+merge :  {A : Ring} → (hb : M A) → (tb : NonZeroPoly A) → (pb : ¬ (hb ≡ (e₊ A))) → (non0ₚ (hb ∷ₚ tb) ≡ non0ₚ (ld hb pb) +ₚ (x·ₚ (non0ₚ tb)))
+merge {A} h t p = cong non0ₚ (cong₂ _∷ₚ_ (sym (e₊-right {A} h)) refl)
+
 0ₚ-multi : {A : Ring} → (p : Poly A) → ·ₚ p 0ₚ ≡ 0ₚ
 0ₚ-multi {A} 0ₚ = refl
 0ₚ-multi {A} (non0ₚ (ld a x)) = refl
@@ -242,9 +245,6 @@ kmulres A (x ∷ₚ p) = cong₂ _∷ₚ_ (((1ᵣ-left A) x)) (kmulres A p)
           switch_konst :  ·ₖₒₙₛₜ a (non0ₚ tb) ≡ ·ₚ (non0ₚ tb) (non0ₚ (ld a pa))
           switch_konst = begin ·ₖₒₙₛₜ a (non0ₚ tb) ≡⟨ refl ⟩ ·ₚ (non0ₚ (ld a pa)) (non0ₚ tb) ≡⟨ ·ₚ-commhlp  (ld a pa)  tb ⟩ ·ₚ (non0ₚ tb) (non0ₚ (ld a pa)) ∎
 
-          merge : (hb : M A) → (tb : NonZeroPoly A) → (pb : ¬ (hb ≡ (e₊ A))) → (non0ₚ (hb ∷ₚ tb) ≡ non0ₚ (ld hb pb) +ₚ (x·ₚ (non0ₚ tb)))
-          merge h t p = cong non0ₚ (cong₂ _∷ₚ_ (sym (e₊-right {A} h)) refl)
-
           split_product : non0ₚ ((A · a) hb ∷ₚ kmul a tb x) ≡ (non0ₚ (ld ((A · a) hb) (nzd A pa x₁)) +ₚ x·ₚ (·ₖₒₙₛₜ a (non0ₚ tb)))
           split_product with dec A a (e₊ A) | inspect (dec A a) (e₊ A)
           ... | no x | [ eq ] rewrite eq = cong non0ₚ (cong₂ _∷ₚ_ (sym ((e₊-right {A} ( (A · a) hb)))) refl)
@@ -293,15 +293,16 @@ kmulres A (x ∷ₚ p) = cong₂ _∷ₚ_ (((1ᵣ-left A) x)) (kmulres A p)
               -- x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)) ≡ ·ₚ (non0ₚ y) (non0ₚ (e₊ A ∷ₚ x))
 ... | yes x₁ | no x₂  = {!   !}
 ... | no x₁ | yes x₂  = {!   !}
-... | no x₁ | no x₂  =  begin (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))) ≡⟨  cong₂ _+ₚ_ {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))} {x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))} refl (cong x·ₚ (reduction x y b)) ⟩
-                              (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))) ≡⟨ {!   !} ⟩
+... | no x₁ | no x₂  =  begin (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))) ≡⟨ cong₂ _+ₚ_ {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {non0ₚ ((A · a) b ∷ₚ kmul a y x₁)} {x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))} {x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))} refl ((cong x·ₚ ((reduction x y b)))) ⟩
+                              (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ y)))) ≡⟨ {!   !} ⟩
                               {!   !} ≡⟨ {!   !} ⟩
-                              {!   !} ≡⟨ {!   !} ⟩
-                             (non0ₚ ((A · b) a ∷ₚ kmul b x x₂) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ (a ∷ₚ x))))) ∎
+                              ((non0ₚ ((A · b) a ∷ₚ kmul b x x₂) +ₚ x·ₚ ((·ₖₒₙₛₜ a (non0ₚ y)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x))))) ≡⟨ cong₂ _+ₚ_ {non0ₚ ((A · b) a ∷ₚ kmul b x x₂)} {non0ₚ ((A · b) a ∷ₚ kmul b x x₂)} {x·ₚ ((·ₖₒₙₛₜ a (non0ₚ y)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x)))} {x·ₚ (·ₚ (non0ₚ y) (non0ₚ (a ∷ₚ x)))} refl (cong x·ₚ (sym (reduction y x a))) ⟩
+                             (non0ₚ ((A · b) a ∷ₚ kmul b x x₂) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ (a ∷ₚ x)))) ∎
             where
-              reduction : (u : NonZeroPoly A) → (v : NonZeroPoly A) → (t : M A) → (·ₚ (non0ₚ u) (non0ₚ (t ∷ₚ v))) ≡ (·ₖₒₙₛₜ t (non0ₚ u)) +ₚ x·ₚ (·ₚ (non0ₚ v) (non0ₚ u))
+              reduction : (u : NonZeroPoly A) → (v : NonZeroPoly A) → (t : M A) → (·ₚ (non0ₚ u) (non0ₚ (t ∷ₚ v))) ≡ (·ₖₒₙₛₜ t (non0ₚ u)) +ₚ x·ₚ (·ₚ (non0ₚ u) (non0ₚ v))
               reduction = {!   !}
 
+          
 
               -- reduction : (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ (·ₚ (non0ₚ x) (non0ₚ (b ∷ₚ y)))) ≡ (non0ₚ ((A · a) b ∷ₚ kmul a y x₁) +ₚ x·ₚ ((·ₖₒₙₛₜ b (non0ₚ x)) +ₚ x·ₚ (·ₚ (non0ₚ y) (non0ₚ x))))
               -- reduction with (dec A) b (e₊ A) 
@@ -552,4 +553,4 @@ t3_q : Poly ring2
 t3_q = non0ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp ))))
 test3 : (·ₚ t3_p  t3_q) ≡ non0ₚ (zeroN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ(oneN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ (ld oneN hlp)))))))
 test3 = refl
-   
+    
