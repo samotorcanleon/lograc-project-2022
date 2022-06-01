@@ -136,6 +136,13 @@ a+x=b+x→a=b {A} x a b h = begin a  ≡⟨ sym (hlp4 x a) ⟩ (A +ᵣ ((-ᵣ A)
 x+a=x+b→a=b : {A : Ring} → (x a b : M A) → (_+ᵣ_ A) x a ≡  (_+ᵣ_ A) x b  → a ≡ b 
 x+a=x+b→a=b {A} x a b h = a+x=b+x→a=b {A} x a b (x+a=x+b→a+x=b+x {A} x a b h )
 
+x+a=x→a=0 : {A : Ring} →  (x a : M A) → (_+ᵣ_ A) x a ≡ x → a ≡ (e₊ A)
+x+a=x→a=0 {A} x a p with a=b→x+a=x+b {A} ((-ᵣ A)x) ((_+ᵣ_ A) x a) x p  
+... | res = begin a  ≡⟨ sym ((ω-left A)a) ⟩ (A +ᵣ (e₊ A))a ≡⟨ cong₂ (_+ᵣ_ A) (sym ((-ᵣ-left A) x)) refl ⟩ ( A +ᵣ ((A +ᵣ (-ᵣ A) x)  x)) a ≡⟨ ((+-assoc  A) ((-ᵣ A) x) x a) ⟩ (A +ᵣ (-ᵣ A) x) ((A +ᵣ x) a) ≡⟨ trans res ((-ᵣ-left A) x) ⟩ e₊ A ∎ 
+
+a+x=x→a=0 : {A : Ring} →  (x a : M A) → (_+ᵣ_ A)  a x ≡ x → a ≡ (e₊ A)
+a+x=x→a=0 {A} x a p = x+a=x→a=0 {A} x a (trans ((+-comm A )x a)  p)
+
 ≢e₊-irrelevant : ∀ {A} {a : M A} → (p q : ¬ (a ≡ (e₊ A))) → p ≡ q
 ≢e₊-irrelevant p q = fun-ext (λ r → ⊥-elim (p r))
 
@@ -254,30 +261,6 @@ non0ₚ x +ₚ non0ₚ y with addp x y
 
 
 
-+ₚ-asoc : {A : Ring} → (p q r : Poly A) → p +ₚ (q +ₚ r) ≡ (p +ₚ q) +ₚ r
-+ₚ-asoc 0ₚ 0ₚ 0ₚ = refl
-+ₚ-asoc 0ₚ 0ₚ (non0ₚ x) = refl
-+ₚ-asoc 0ₚ (non0ₚ x) r = refl
-+ₚ-asoc (non0ₚ x) 0ₚ r = refl
-+ₚ-asoc (non0ₚ p) (non0ₚ q) 0ₚ = begin (non0ₚ p +ₚ (non0ₚ q +ₚ 0ₚ))   ≡⟨ refl ⟩ (0ₚ +ₚ (non0ₚ p +ₚ non0ₚ q)) ≡⟨ +ₚ-comm 0ₚ (non0ₚ p +ₚ non0ₚ q) ⟩ ((non0ₚ p +ₚ non0ₚ q) +ₚ 0ₚ) ∎
-+ₚ-asoc {A} (non0ₚ p) (non0ₚ q) (non0ₚ r) with addp q r | inspect (addp q) r | addp p q | inspect (addp p) q
-... | just q+r | [ eq ] | just p+q | [ eq₁ ]  with addp p q+r | inspect (addp p) q+r | addp p+q r | inspect (addp p+q) r 
-... | just p+q$+r | [ eq₂ ] | just p+$q+r | [ eq₃ ] = {!   !}
-... | just x₁ | [ eq₂ ] | nothing | [ eq₃ ] = {!   !}
-... | nothing | [ eq₂ ] | a2 | [ eq₃ ] = {!   !}
-+ₚ-asoc {A} (non0ₚ p) (non0ₚ q) (non0ₚ r) | just x | [ eq ] | nothing | [ eq₁ ] = {!   !}
-+ₚ-asoc {A} (non0ₚ p) (non0ₚ q) (non0ₚ r) | nothing | [ eq ] | just y | [ eq₁ ]  with addp y r | inspect (addp y) r 
-... | just x | [ eq₂ ] = {!   !}
-... | nothing | [ eq₂ ] = {!   !}
-+ₚ-asoc {A} (non0ₚ p) (non0ₚ q) (non0ₚ r) | nothing | [ eq ] | nothing | [ eq₁ ] = {!   !}
-  where 
-    hlp2 : (addp p q ≡ nothing) → (addp q r ≡ nothing) → addp p q ≡ addp r q 
-    hlp2 h k = trans h (sym (trans (addp-comm r q) k))
-    hlp : (p q r : NonZeroPoly A) → addp p q ≡ addp r q  → p ≡ r
-    hlp (ld a x) (ld a₁ x₁) (ld a₂ x₂) h = {!   !}
-    hlp (ld a x) (ld a₁ x₁) (x₂ ∷ₚ r) h = {!   !}
-    hlp (ld a x) (x₁ ∷ₚ q) r h = {!   !}
-    hlp (x ∷ₚ p) q r h = {!   !}
 
 --  /////////////////////
 ∷ₚ-injh : {A : Ring} → ∀ {a b : M A} → ∀ {c d : NonZeroPoly A} → (a ∷ₚ c) ≡ (b ∷ₚ d) →  a ≡ b 
@@ -297,6 +280,25 @@ ld-≡ {A} {a} {.a} {c} {d} refl | no x = refl
 
 
 
+ldtl⊥ : {A : Ring} →  (p q : NonZeroPoly A) → addp p q  ≡  just p → ⊥
+ldtl⊥ {A} (ld a x) (ld a₁ x₁) r with dec A ((A +ᵣ a) a₁) (e₊ A)
+... | no x₂ with x₁ (x+a=x→a=0{A} a a₁ (ld-inj (just-injective r)))
+... | ()
+ldtl⊥ {A} (x ∷ₚ p) (ld a x₁) r  with ¬-elim x₁ (a+x=x→a=0 {A} x a (∷ₚ-injh (just-injective r)) )
+... | ()
+ldtl⊥ {A} (x ∷ₚ p) (x₁ ∷ₚ q) r with addp p q | inspect (addp p ) q  
+... | just x₂ | [ eq ] with   (∷ₚ-injt (just-injective r))
+... | res rewrite res with ldtl⊥ p q eq 
+... | () 
+
+ldtl⊥ {A} (x ∷ₚ p) (x₁ ∷ₚ q) r | nothing | [ eq ] with dec A ((A +ᵣ x) x₁) (e₊ A)
+ldtl⊥ {A} (x ∷ₚ p) (x₁ ∷ₚ q) () | nothing | [ eq ] | yes x₂
+... | no x₂ with just-injective r 
+... | () 
+
+ldtl⊥sym : {A : Ring} →  (p q : NonZeroPoly A) → addp q p  ≡  just p → ⊥
+ldtl⊥sym p q r with ldtl⊥ p q (trans (addp-comm p q) r)
+... | ()
 
 
 addpinj : {A : Ring} → (p q r : NonZeroPoly A) → addp q p ≡ addp r p  → q ≡ r 
@@ -321,13 +323,17 @@ addpinj {A} (ld a pa) (b ∷ₚ tb) (c ∷ₚ tc) h = ∷ₚ-≡ headeq tleq
     tleq  = ∷ₚ-injt (just-injective h)
 addpinj {A} (a ∷ₚ ta) (ld b pb) (ld c pc) h = ld-≡ (a+x=b+x→a=b {A} a b c (∷ₚ-injh (just-injective h)))
 addpinj {A} (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) h with addp tc ta | inspect (addp tc) ta
-... | just tc+ta | [ eq ] = {!     !}
-... | nothing | [ eq ] with dec A ((A +ᵣ hc) a) (e₊ A)
+... | just tc+ta | [ eq ] with (∷ₚ-injt(just-injective h))
+... | res rewrite res with ldtl⊥sym  tc+ta tc eq
+... | ()
+addpinj {A} (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) h | nothing | [ eq ] with dec A ((A +ᵣ hc) a) (e₊ A)
 addpinj {A} (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) () | nothing | [ eq ] | yes x
 addpinj {A} (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) () | nothing | [ eq ] | no x
 addpinj {A} (a ∷ₚ ta) (b ∷ₚ tb) (ld c pc) h with addp tb ta | inspect (addp tb) ta
-... | just tb+ta | [ eq ] = {!    !}
-... | nothing | [ eq ] with dec A ((A +ᵣ b) a) (e₊ A) 
+... | just tb+ta | [ eq ] with (∷ₚ-injt(just-injective h))
+... | res rewrite res  with ldtl⊥sym  ta tb eq 
+... | ()
+addpinj {A} (a ∷ₚ ta) (b ∷ₚ tb) (ld c pc) h | nothing | [ eq ] with dec A ((A +ᵣ b) a) (e₊ A) 
 addpinj {A} (a ∷ₚ ta) (b ∷ₚ tb) (ld c pc) () | nothing | [ eq ] | yes x
 addpinj {A} (a ∷ₚ ta) (b ∷ₚ tb) (ld c pc) () | nothing | [ eq ] | no x
 addpinj {A} (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) h with addp tb ta | inspect (addp tb) ta | addp tc ta | inspect (addp tc) ta  
@@ -400,3 +406,30 @@ n0→n0 {A} a = contraposition (hlphlp {A} a)
 ... | ()
 -ₚ-left {A} (non0ₚ x)  | nothing | [ i ] = refl
 
+ 
+
+
++ₚ-asoc : {A : Ring} → (p q r : Poly A) → p +ₚ (q +ₚ r) ≡ (p +ₚ q) +ₚ r
++ₚ-asoc 0ₚ 0ₚ 0ₚ = refl
++ₚ-asoc 0ₚ 0ₚ (non0ₚ x) = refl
++ₚ-asoc 0ₚ (non0ₚ x) r = refl
++ₚ-asoc (non0ₚ x) 0ₚ r = refl
++ₚ-asoc (non0ₚ p) (non0ₚ q) 0ₚ = begin (non0ₚ p +ₚ (non0ₚ q +ₚ 0ₚ))   ≡⟨ refl ⟩ (0ₚ +ₚ (non0ₚ p +ₚ non0ₚ q)) ≡⟨ +ₚ-comm 0ₚ (non0ₚ p +ₚ non0ₚ q) ⟩ ((non0ₚ p +ₚ non0ₚ q) +ₚ 0ₚ) ∎
++ₚ-asoc {A} (non0ₚ p) (non0ₚ q) (non0ₚ r) with addp q r | inspect (addp q) r | addp p q | inspect (addp p) q
+... | just q+r | [ eq ] | just p+q | [ eq₁ ]  with addp p q+r | inspect (addp p) q+r | addp p+q r | inspect (addp p+q) r 
+... | just p+q$+r | [ eq₂ ] | just p+$q+r | [ eq₃ ] = {!   !}
+... | just x₁ | [ eq₂ ] | nothing | [ eq₃ ] = {!   !}
+... | nothing | [ eq₂ ] | a2 | [ eq₃ ] = {!   !}
++ₚ-asoc {A} (non0ₚ p) (non0ₚ q) (non0ₚ r) | just x | [ eq ] | nothing | [ eq₁ ] = {!   !}
++ₚ-asoc {A} (non0ₚ p) (non0ₚ q) (non0ₚ r) | nothing | [ eq ] | just y | [ eq₁ ]  with addp y r | inspect (addp y) r 
+... | just x | [ eq₂ ] = {!  !}
+... | nothing | [ eq₂ ] with addpinj r   q y (trans eq (sym eq₂))
+... | res rewrite res with ldtl⊥sym y p  eq₁
+... | ()
++ₚ-asoc {A} (non0ₚ p) (non0ₚ q) (non0ₚ r) | nothing | [ eq ] | nothing | [ eq₁ ] = cong non0ₚ (addpinj q p r (trans ( trans eq₁ (sym eq) ) (addp-comm q r)))
+  where 
+    hlp2 : (addp p q ≡ nothing) → (addp q r ≡ nothing) → addp p q ≡ addp r q 
+    hlp2 h k = trans h (sym (trans (addp-comm r q) k))
+
+    -- addpinj : {A : Ring} → (p q r : NonZeroPoly A) → addp q p ≡ addp r p  → q ≡ r 
+ 

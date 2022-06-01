@@ -655,4 +655,12 @@ t3_q : Poly ring2
 t3_q = non0ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp ))))
 test3 : (·ₚ t3_p  t3_q) ≡ non0ₚ (zeroN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ(oneN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ (ld oneN hlp)))))))
 test3 = refl
-           
+
+
+
+
+
+
+
+
+
