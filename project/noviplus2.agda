@@ -32,6 +32,12 @@ postulate fun-ext : ∀ {a b} → Extensionality a b
   → ⊥
 ¬-elim ¬x x = ¬x x
 
+contraposition : ∀ {A B : Set}
+  → (A → B)
+    -----------
+  → (¬ B → ¬ A)
+contraposition f ¬y x = ¬y (f x)
+
 neki : ¬ (2 ≡ 4)
 neki ()
 
@@ -152,6 +158,13 @@ module RingProofs {A : Ring} where
   a+b=b+a=e a b p = begin b + a   ≡⟨ (+-comm ) b a ⟩ a + b ≡⟨ p ⟩ 𝟘 ∎
 
 
+  n0→n0 : (a : M) → ¬ (a ≡ 𝟘) → ¬ (- a ≡ 𝟘) 
+  n0→n0 a = contraposition (hlphlp a)
+    where 
+      hlphlp :  (a : M) → (- a ≡ 𝟘) → (a ≡ 𝟘) 
+      hlphlp  a p = trans (sym (trans((a=b→a+x=b+x a (- a) 𝟘 p)) ((ω-left ) a)))  ((-left ) a)
+
+
 module _ (A : Ring) where
   open Ring A renaming (𝟘 to 𝟘ᵣ; 𝟙 to 𝟙ᵣ)
 
@@ -165,7 +178,7 @@ module _ (A : Ring) where
 
 
 module _ (A : Ring) where
-  open Ring A renaming (𝟘 to 𝟘ᵣ; 𝟙 to 𝟙ᵣ; _+_ to _+ᵣ_; _·_ to _·ᵣ_; 𝟙≠𝟘 to 𝟙ᵣ≠𝟘ᵣ; 𝟙-left to 𝟙ᵣ-left; ·-comm to ·ᵣ-comm)
+  open Ring A renaming (𝟘 to 𝟘ᵣ; 𝟙 to 𝟙ᵣ; _+_ to _+ᵣ_; _·_ to _·ᵣ_; -_ to -ᵣ_; 𝟙≠𝟘 to 𝟙ᵣ≠𝟘ᵣ; 𝟙-left to 𝟙ᵣ-left; ·-comm to ·ᵣ-comm)
   open RingProofs {A}
 
     --///////////////////////// ADDITION DEFINITION /////////////////////////
@@ -354,65 +367,35 @@ module _ (A : Ring) where
 
 
 
--- n0→n0 : {A : Ring} → (a : M A) → ¬ (a ≡ e₊ A) → ¬ ((-ᵣ A) a ≡ e₊ A) 
--- n0→n0 {A} a = contraposition (hlphlp {A} a)
---   where 
---     hlphlp : {A : Ring} → (a : M A) → ((-ᵣ A) a ≡ e₊ A) → (a ≡ e₊ A) 
---     hlphlp {A} a p = trans (sym (trans((a=b→a+x=b+x {A} a ((-ᵣ A) a) (e₊ A) p)) ((ω-left A) a)))  ((-ᵣ-left A) a)
 
--- -ₚh : {A : Ring} → (p : NonZeroPoly A) → ( NonZeroPoly A)
--- -ₚh {A} (ld a x) = ld ((-ᵣ_ A) a)  (n0→n0 {A} a x)
--- -ₚh {A} (x ∷ₚ p) = ((-ᵣ_ A) x) ∷ₚ (-ₚh p)
+  -ₚh :  (p : NonZeroPoly A) → ( NonZeroPoly A)
+  -ₚh  (ld a x) = ld (-ᵣ a)  (n0→n0  a x)
+  -ₚh  (x ∷ₚ p) = (-ᵣ x) ∷ₚ (-ₚh p)
 
--- -ₚ : {A : Ring} → (p : Poly A) → ( Poly A)
--- -ₚ {A} 0ₚ = 0ₚ
--- -ₚ {A} (non𝟘ₚ p) = non𝟘ₚ (-ₚh p)
+  -ₚ :  (p : Poly A) → ( Poly A)
+  -ₚ  𝟘ₚ = 𝟘ₚ
+  -ₚ  (non𝟘ₚ p) = non𝟘ₚ (-ₚh p)
 
 
--- -ₚh-empt : {A : Ring}→ (p : NonZeroPoly A) → addp (-ₚh p) p ≡ nothing
--- -ₚh-empt {A} (ld a x) with dec A ((A +ᵣ (-ᵣ A) a) a) (𝟘ᵣ)
--- ... | yes x₁ = refl
--- ... | no x₁ with ¬-elim  x₁ ((-ᵣ-left A) a) 
--- ... | () 
--- -ₚh-empt {A} (x ∷ₚ p) with -ₚh-empt p  | addp (-ₚh p) p | inspect (addp (-ₚh p)) p
--- ... | h | nothing | [ i ] with dec A ((A +ᵣ (-ᵣ A) x) x) (𝟘ᵣ)
--- ... | yes x₁ = refl
--- ... | no x₁ with ¬-elim  x₁ ((-ᵣ-left A) x) 
--- ... | ()
--- -ₚh-empt {A} (x ∷ₚ p) | h | just x₁ | [ i ] with justnoth⊥ (trans (sym h) i)
--- ... | ()
+  -ₚh-empt :  (p : NonZeroPoly A) → addp (-ₚh p) p ≡ nothing
+  -ₚh-empt  (ld a x) with dec  ( (-ᵣ a) +ᵣ a) (𝟘ᵣ)
+  ... | yes x₁ = refl
+  ... | no x₁ with ¬-elim  x₁ ((-left ) a) 
+  ... | () 
+  -ₚh-empt  (x ∷ₚ p) with -ₚh-empt p  | addp (-ₚh p) p | inspect (addp (-ₚh p)) p
+  ... | h | nothing | [ i ] with dec ( (-ᵣ x) +ᵣ x) (𝟘ᵣ)
+  ... | yes x₁ = refl
+  ... | no x₁ with ¬-elim  x₁ ((-left ) x) 
+  ... | ()
+  -ₚh-empt  (x ∷ₚ p) | h | just x₁ | [ i ] with justnoth⊥ (trans (sym h) i)
+  ... | ()
 
--- -ₚ-left  : {A : Ring}→ (p : Poly A) → (-ₚ p) +ₚ p ≡ 0ₚ
--- -ₚ-left {A} 0ₚ = refl
--- -ₚ-left {A} (non𝟘ₚ x) with addp (-ₚh x) x | inspect (addp (-ₚh x)) x
--- ... | just p | [ i ] with justnoth⊥ (sym(trans (sym i) (-ₚh-empt x )) )
--- ... | ()
--- -ₚ-left {A} (non𝟘ₚ x)  | nothing | [ i ] = refl
+  -ₚ-left  :  (p : Poly A) → (-ₚ p) +ₚ p ≡ 𝟘ₚ
+  -ₚ-left  𝟘ₚ = refl
+  -ₚ-left  (non𝟘ₚ x) with addp (-ₚh x) x | inspect (addp (-ₚh x)) x
+  ... | just p | [ i ] with justnoth⊥ (sym(trans (sym i) (-ₚh-empt x )) )
+  ... | ()
+  -ₚ-left  (non𝟘ₚ x)  | nothing | [ i ] = refl
 
  
-
-
--- +ₚ-asoc : {A : Ring} → (p q r : Poly A) → p +ₚ (q +ₚ r) ≡ (p +ₚ q) +ₚ r
--- +ₚ-asoc 0ₚ 0ₚ 0ₚ = refl
--- +ₚ-asoc 0ₚ 0ₚ (non𝟘ₚ x) = refl
--- +ₚ-asoc 0ₚ (non𝟘ₚ x) r = refl
--- +ₚ-asoc (non𝟘ₚ x) 0ₚ r = refl
--- +ₚ-asoc (non𝟘ₚ p) (non𝟘ₚ q) 0ₚ = begin (non𝟘ₚ p +ₚ (non𝟘ₚ q +ₚ 0ₚ))   ≡⟨ refl ⟩ (0ₚ +ₚ (non𝟘ₚ p +ₚ non𝟘ₚ q)) ≡⟨ +ₚ-comm 0ₚ (non𝟘ₚ p +ₚ non𝟘ₚ q) ⟩ ((non𝟘ₚ p +ₚ non𝟘ₚ q) +ₚ 0ₚ) ∎
--- +ₚ-asoc {A} (non𝟘ₚ p) (non𝟘ₚ q) (non𝟘ₚ r) with addp q r | inspect (addp q) r | addp p q | inspect (addp p) q
--- ... | just q+r | [ eq ] | just p+q | [ eq₁ ]  with addp p q+r | inspect (addp p) q+r | addp p+q r | inspect (addp p+q) r 
--- ... | just p+q$+r | [ eq₂ ] | just p+$q+r | [ eq₃ ] = {!   !}
--- ... | just x₁ | [ eq₂ ] | nothing | [ eq₃ ] = {!   !}
--- ... | nothing | [ eq₂ ] | a2 | [ eq₃ ] = {!   !}
--- +ₚ-asoc {A} (non𝟘ₚ p) (non𝟘ₚ q) (non𝟘ₚ r) | just x | [ eq ] | nothing | [ eq₁ ] = {!   !}
--- +ₚ-asoc {A} (non𝟘ₚ p) (non𝟘ₚ q) (non𝟘ₚ r) | nothing | [ eq ] | just y | [ eq₁ ]  with addp y r | inspect (addp y) r 
--- ... | just x | [ eq₂ ] = {!  !}
--- ... | nothing | [ eq₂ ] with addpinj r   q y (trans eq (sym eq₂))
--- ... | res rewrite res with ldtl⊥sym y p  eq₁
--- ... | ()
--- +ₚ-asoc {A} (non𝟘ₚ p) (non𝟘ₚ q) (non𝟘ₚ r) | nothing | [ eq ] | nothing | [ eq₁ ] = cong non𝟘ₚ (addpinj q p r (trans ( trans eq₁ (sym eq) ) (addp-comm q r)))
---   where 
---     hlp2 : (addp p q ≡ nothing) → (addp q r ≡ nothing) → addp p q ≡ addp r q 
---     hlp2 h k = trans h (sym (trans (addp-comm r q) k))
-
---     -- addpinj : {A : Ring} → (p q r : NonZeroPoly A) → addp q p ≡ addp r p  → q ≡ r 
  
