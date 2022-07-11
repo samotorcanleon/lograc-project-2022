@@ -109,10 +109,10 @@ module RingProofs {A : Ring} where
       hlp1 = trans h (sym k)
       hlp3 : (x : M ) →  a ≡ b →  x + a ≡ x + b 
       hlp3 x p = cong₂ _+_ refl p
-      hlp4 : (x a : M ) →  (- x) + (x + a) ≡  a
-      hlp4 x a =  begin   (- x) + (x + a)  
+      hlp4 : (x a : M ) →  - x + (x + a) ≡  a
+      hlp4 x a =  begin   - x + (x + a)  
                                           ≡⟨ sym((+-assoc ) (- x) x a) ⟩
-                          ((- x) + x) + a 
+                          - x + x + a 
                                           ≡⟨ cong₂ (_+_) (-left x) refl ⟩ 
                           𝟘 + a 
                                           ≡⟨ ω-left  a ⟩
@@ -120,49 +120,75 @@ module RingProofs {A : Ring} where
       hlp2 : x + a ≡ x + b → a ≡ b 
       hlp2 p =  begin a  
                                 ≡⟨ sym (hlp4 x a) ⟩
-                (- x) + (x + a) 
+                - x + (x + a) 
                                 ≡⟨ cong₂ (_+_) refl hlp1 ⟩ 
-                ((- x)) + (x + b) 
+                - x + (x + b) 
                                 ≡⟨ hlp4 x b ⟩ 
                 b  ∎
 
-
   a=b→x+a=x+b :   (x a b : M ) →  a ≡ b →  x + a ≡ x + b 
   a=b→x+a=x+b  x a b p = cong₂ (_+_ ) refl p
+
   a=b→a+x=b+x :   (x a b : M ) →  a ≡ b →  a + x ≡ b + x 
   a=b→a+x=b+x  x a b p = cong₂ (_+_) p refl
 
   a+x=0=b+x→a=b :  (x a b : M) →  a + x ≡ 𝟘 →   b + x ≡ 𝟘 → a ≡ b 
   a+x=0=b+x→a=b  x a b h k = x+a=0=x+b→a=b  x a b ((trans (+-comm  x a) h)) ((trans ((+-comm ) x b) k))
+
   x+a=x+b→a+x=b+x :  (x a b : M ) →  x + a ≡  x + b →    a + x ≡  b + x 
   x+a=x+b→a+x=b+x  x a b h = trans (trans (+-comm a x) h) (+-comm  x b)
+
   a+x=b+x→x+a=x+b :  (x a b : M ) →  a + x ≡ b + x →   x + a ≡  x + b 
   a+x=b+x→x+a=x+b  x a b h = trans (trans (+-comm  x a) h) (+-comm  b x)
+
   a+x=b+x→a=b :  (x a b : M ) → a + x ≡   b + x  → a ≡ b 
-  a+x=b+x→a=b  x a b h = begin a  ≡⟨ sym (hlp4 x a) ⟩ ( (- x)) + ( x + a) ≡⟨ cong₂  (_+_ ) refl (a+x=b+x→x+a=x+b x a b h) ⟩ ( (- x))+ ( x + b) ≡⟨ hlp4 x b ⟩ b ∎
+  a+x=b+x→a=b  x a b h = begin  a  
+                                                  ≡⟨ sym (hlp4 x a) ⟩
+                                - x + ( x + a) 
+                                                  ≡⟨ cong₂  (_+_ ) refl (a+x=b+x→x+a=x+b x a b h) ⟩
+                                - x + ( x + b) 
+                                                  ≡⟨ hlp4 x b ⟩
+                                b ∎
     where 
-      hlp4 : (x a : M ) →   ( (- x)) + (x + a) ≡  a
-      hlp4 x a =  begin (- x) + (x + a)  ≡⟨ sym((+-assoc ) (- x) x a) ⟩ ((- x) + x) + a ≡⟨ cong₂ (_+_) ((-left ) x) refl ⟩ 𝟘 + a ≡⟨ ω-left  a ⟩ a ∎
+      hlp4 : (x a : M ) → - x + (x + a) ≡  a
+      hlp4 x a =  begin - x + (x + a)   
+                                        ≡⟨ sym((+-assoc ) (- x) x a) ⟩
+                        - x + x + a     
+                                        ≡⟨ cong₂ (_+_) ((-left ) x) refl ⟩
+                        𝟘 + a 
+                                        ≡⟨ ω-left  a ⟩
+                        a ∎
 
   x+a=x+b→a=b : (x a b : M) → x + a ≡  x + b  → a ≡ b 
   x+a=x+b→a=b  x a b h = a+x=b+x→a=b  x a b (x+a=x+b→a+x=b+x  x a b h )
 
   x+a=x→a=0 :   (x a : M ) → x + a ≡ x → a ≡ 𝟘
   x+a=x→a=0  x a p with a=b→x+a=x+b  (- x) (x + a) x p  
-  ... | res = begin a  ≡⟨ sym ((ω-left )a) ⟩ 𝟘 + a ≡⟨ cong₂ (_+_ ) (sym ((-left ) x)) refl ⟩ ((- x) + x) + a ≡⟨ ((+-assoc ) (- x) x a) ⟩  (- x) + (x + a) ≡⟨ trans res ((-left ) x) ⟩ 𝟘 ∎ 
+  ... | res = begin a  
+                                    ≡⟨ sym ((ω-left ) a) ⟩
+                    𝟘 + a 
+                                    ≡⟨ cong₂ (_+_ ) (sym ((-left ) x)) refl ⟩
+                    - x + x + a 
+                                    ≡⟨ ((+-assoc ) (- x) x a) ⟩
+                    - x + (x + a) 
+                                    ≡⟨ trans res ((-left ) x) ⟩
+                    𝟘 ∎ 
 
   a+x=x→a=0 :  (x a : M ) → a + x ≡ x → a ≡ 𝟘
   a+x=x→a=0  x a p = x+a=x→a=0  x a (trans ((+-comm) x a)  p)
 
   a+b=b+a=e : (a b : M ) → a + b ≡ 𝟘 → b + a ≡ 𝟘
-  a+b=b+a=e a b p = begin b + a   ≡⟨ (+-comm ) b a ⟩ a + b ≡⟨ p ⟩ 𝟘 ∎
-
+  a+b=b+a=e a b p = begin b + a  
+                                ≡⟨ (+-comm ) b a ⟩
+                          a + b 
+                                ≡⟨ p ⟩
+                          𝟘 ∎
 
   n0→n0 : (a : M) → ¬ (a ≡ 𝟘) → ¬ (- a ≡ 𝟘) 
   n0→n0 a = contraposition (hlphlp a)
     where 
       hlphlp :  (a : M) → (- a ≡ 𝟘) → (a ≡ 𝟘) 
-      hlphlp  a p = trans (sym (trans((a=b→a+x=b+x a (- a) 𝟘 p)) ((ω-left ) a)))  ((-left ) a)
+      hlphlp  a p = trans (sym (trans (a=b→a+x=b+x a (- a) 𝟘 p) ((ω-left ) a))) ((-left ) a)
 
 
 module _ (A : Ring) where
@@ -222,7 +248,13 @@ module _ (A : Ring) where
   ... | just x | [ eq ] | just y | [ eq2 ] = cong just (cong₂ _∷ₚ_ ((+-comm ) a b) (hlp (x=yjust  eq2 eq)))
     where 
       x=yjust : addp q p ≡ just y → addp p q ≡ just x → just x ≡ just y 
-      x=yjust p1 p2 = begin just x   ≡⟨ sym p2 ⟩ addp p q ≡⟨ addp-comm p q ⟩ addp q p ≡⟨ p1 ⟩ just y ∎
+      x=yjust p1 p2 = begin just x  
+                                      ≡⟨ sym p2 ⟩
+                            addp p q 
+                                      ≡⟨ addp-comm p q ⟩
+                            addp q p 
+                                      ≡⟨ p1 ⟩
+                            just y ∎
       hlp : just x ≡ just y → x ≡ y 
       hlp refl = refl
 
@@ -230,7 +262,7 @@ module _ (A : Ring) where
   ... | ()
   addp-comm  (a ∷ₚ p) (b ∷ₚ q) | nothing | [ eq ] | just x | [ eq₁ ] with justnoth⊥ (trans (sym  eq) (trans (addp-comm p q) eq₁))
   ... | ()
-  addp-comm  (a ∷ₚ p) (b ∷ₚ q) | nothing | [ eq ] | nothing | [ eq₁ ] with ( dec  (b +ᵣ a) 𝟘ᵣ) |  ( dec  (a +ᵣ b) 𝟘ᵣ)
+  addp-comm  (a ∷ₚ p) (b ∷ₚ q) | nothing | [ eq ] | nothing | [ eq₁ ] with ( dec (b +ᵣ a) 𝟘ᵣ) | ( dec (a +ᵣ b) 𝟘ᵣ)
   ... | yes x | yes x₁ = refl
   ... | yes x | no y  with ¬-elim y (a+b=b+a=e b a x)
   ... | () 
@@ -249,7 +281,13 @@ module _ (A : Ring) where
   ... | just x | [ eq ] | just y | [ eq₁ ] = cong non𝟘ₚ (hlp (x=yjust eq₁ eq))
     where 
       x=yjust : addp q p ≡ just y → addp p q ≡ just x → just x ≡ just y 
-      x=yjust p1 p2 = begin just x   ≡⟨ sym p2 ⟩ addp p q ≡⟨ addp-comm p q ⟩ addp q p ≡⟨ p1 ⟩ just y ∎
+      x=yjust p1 p2 = begin just x   
+                                      ≡⟨ sym p2 ⟩
+                            addp p q 
+                                      ≡⟨ addp-comm p q ⟩
+                            addp q p 
+                                      ≡⟨ p1 ⟩
+                            just y ∎
       hlp : just x ≡ just y → x ≡ y 
       hlp refl = refl
   ... | just x | [ eq ] | nothing | [ eq₁ ] with justnoth⊥ (trans (sym eq₁) (trans (addp-comm q p) eq))
