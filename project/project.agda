@@ -536,213 +536,167 @@ module _ (A : Ring) where
 
 
 
---   ·ₚ-comm : (a : Poly A)→ (b : Poly A) → (·ₚ a b) ≡ (·ₚ b a)
---   ·ₚ-comm 𝟘ₚ 𝟘ₚ = refl
---   ·ₚ-comm 𝟘ₚ (non𝟘ₚ (ld a x)) = refl
---   ·ₚ-comm 𝟘ₚ (non𝟘ₚ (x ∷ₚ tx)) = begin ·ₚ 𝟘ₚ (non𝟘ₚ (x ∷ₚ tx)) ≡⟨⟩ 𝟘ₚ ≡⟨⟩ x·ₚ 𝟘ₚ ≡⟨ cong x·ₚ (sym (𝟘ₚ-multi (non𝟘ₚ tx)) ) ⟩ x·ₚ (·ₚ (non𝟘ₚ tx) 𝟘ₚ) ∎
---   ·ₚ-comm (non𝟘ₚ (ld a x)) 𝟘ₚ = refl
---   ·ₚ-comm (non𝟘ₚ (x ∷ₚ tx)) 𝟘ₚ = sym (begin 𝟘ₚ ≡⟨ refl ⟩ x·ₚ 𝟘ₚ ≡⟨ cong x·ₚ (sym (𝟘ₚ-multi (non𝟘ₚ tx))) ⟩ x·ₚ (·ₚ (non𝟘ₚ tx) 𝟘ₚ) ∎ )
---   ·ₚ-comm (non𝟘ₚ x) (non𝟘ₚ y) = ·ₚ-commhlp x y
+  ·ₚ-comm : (a : Poly A)→ (b : Poly A) → (·ₚ a b) ≡ (·ₚ b a)
+  ·ₚ-comm 𝟘ₚ 𝟘ₚ = refl
+  ·ₚ-comm 𝟘ₚ (non𝟘ₚ (ld a x)) = refl
+  ·ₚ-comm 𝟘ₚ (non𝟘ₚ (x ∷ₚ tx)) = begin ·ₚ 𝟘ₚ (non𝟘ₚ (x ∷ₚ tx)) 
+                                            ≡⟨⟩ 
+                                      𝟘ₚ 
+                                            ≡⟨⟩ 
+                                      x·ₚ 𝟘ₚ 
+                                            ≡⟨ cong x·ₚ (sym (𝟘ₚ-multi (non𝟘ₚ tx)) ) ⟩
+                                      x·ₚ (·ₚ (non𝟘ₚ tx) 𝟘ₚ) 
+                                      ∎
+  ·ₚ-comm (non𝟘ₚ (ld a x)) 𝟘ₚ = refl
+  ·ₚ-comm (non𝟘ₚ (x ∷ₚ tx)) 𝟘ₚ = sym (begin  𝟘ₚ 
+                                                  ≡⟨ refl ⟩ 
+                                            x·ₚ 𝟘ₚ 
+                                                  ≡⟨ cong x·ₚ (sym (𝟘ₚ-multi (non𝟘ₚ tx)))⟩
+                                            x·ₚ (·ₚ (non𝟘ₚ tx) 𝟘ₚ) 
+                                            ∎)
+  ·ₚ-comm (non𝟘ₚ x) (non𝟘ₚ y) = ·ₚ-commhlp x y
 
 
---   --///////////////////////// DEGREE DEFINITION /////////////////////////
---   degreehlp : NonZeroPoly A → ℕ
---   degreehlp (ld a x) = 𝟘
---   degreehlp (x ∷ₚ p) = 1 + degreehlp p
+  --///////////////////////// DEGREE DEFINITION /////////////////////////
+  degreehlp : NonZeroPoly A → ℕ
+  degreehlp (ld a x) = 0
+  degreehlp (x ∷ₚ p) = 1 +ⁿ degreehlp p
 
---   degree : Poly A → ℕ
---   degree 𝟘ₚ = 𝟘
---   degree (non𝟘ₚ x) = degreehlp x
+  degree : Poly A → ℕ
+  degree 𝟘ₚ = 0
+  degree (non𝟘ₚ x) = degreehlp x
 
---   --///////////////////////// PROOFS FOR DEGREE /////////////////////////
---   -- addition of polynomials can only reduce degree
---   +-deg : (p q : Poly A ) →  degree q ≤ degree p  →  degree (p +ₚ q) ≤ degree p
---   +-deg 𝟘ₚ 𝟘ₚ h = h
---   +-deg 𝟘ₚ (non𝟘ₚ x) h = h
---   +-deg (non𝟘ₚ p) 𝟘ₚ z≤n = {! ≤-refl ? ?   !}
---   +-deg (non𝟘ₚ p) (non𝟘ₚ q) h = {!   !}
+ --///////////////////////// PROOFS FOR DEGREE /////////////////////////
 
---   -- multiplication by constant doesn't change degree
---   kmul-deg : (a : M) → (p : NonZeroPoly A) → (x : ¬ (a ≡ (𝟘ᵣ))) → degreehlp (kmul a p x) ≡ degreehlp p
---   kmul-deg a (ld a₁ x₁) x = refl
---   kmul-deg a (x₁ ∷ₚ p) x = cong suc (kmul-deg a p x)
+  -- multiplication by constant doesn't change degree
+  kmul-deg : (a : M) → (p : NonZeroPoly A) → (x : ¬ (a ≡ 𝟘ᵣ)) → degreehlp (kmul a p x) ≡ degreehlp p
+  kmul-deg a (ld a₁ x₁) x = refl
+  kmul-deg a (x₁ ∷ₚ p) x = cong suc (kmul-deg a p x)
 
---   ·ₖₒₙₛₜ-degree : (a : M) → (p : Poly A) → ¬ (a ≡ (𝟘ᵣ)) →  degree (·ₖₒₙₛₜ a p) ≡ (degree p)
---   ·ₖₒₙₛₜ-degree a 𝟘ₚ x = refl
---   ·ₖₒₙₛₜ-degree a (non𝟘ₚ h) pr with ((dec A) a (𝟘ᵣ) )
---   ...                                 | yes x with (pr x)
---   ...                                          | ()
---   ·ₖₒₙₛₜ-degree a (non𝟘ₚ p) pr      | no x = kmul-deg a p pr
+  ·ₖₒₙₛₜ-degree : (a : M) → (p : Poly A) → ¬ (a ≡ 𝟘ᵣ) →  degree (·ₖₒₙₛₜ a p) ≡ (degree p)
+  ·ₖₒₙₛₜ-degree a 𝟘ₚ x = refl
+  ·ₖₒₙₛₜ-degree a (non𝟘ₚ h) pr with dec a 𝟘ᵣ
+  ...                                 | yes x with (pr x)
+  ...                                          | ()
+  ·ₖₒₙₛₜ-degree a (non𝟘ₚ p) pr      | no x = kmul-deg a p pr
 
---   -- multiplication by x increases degree by 1  (NONZERO POLYNOMIALS)
---   x·ₚ-deg : (a : NonZeroPoly A) → degree (x·ₚ (non𝟘ₚ a)) ≡ 1 + (degree (non𝟘ₚ a))
---   x·ₚ-deg (ld a x) = refl
---   x·ₚ-deg (x ∷ₚ a) = cong suc refl
+  -- multiplication by x increases degree by 1  (NONZERO POLYNOMIALS)
+  x·ₚ-deg : (a : NonZeroPoly A) → degree (x·ₚ (non𝟘ₚ a)) ≡ 1 +ⁿ (degree (non𝟘ₚ a))
+  x·ₚ-deg (ld a x) = refl
+  x·ₚ-deg (x ∷ₚ a) = cong suc refl
 
---   -- ·ₚ-degree : (p : NonZeroPoly A) → (q : NonZeroPoly A) → degree (·ₚ (non𝟘ₚ p) (non𝟘ₚ q)) ≡ (degree (non𝟘ₚ p)) + (degree (non𝟘ₚ q))
---   -- ·ₚ-degree (ld a x) q = ·ₖₒₙₛₜ-degree a (non𝟘ₚ q) x
+module testZ2 where
 
---   -- ·ₚ-degree (x ∷ₚ p) (ld ha pa) with dec A x (𝟘ᵣ)
---   -- ... | no t = {!   !}
---   -- ... | yes t = {!   !}
---   -- ·ₚ-degree (hp ∷ₚ tp) (hq ∷ₚ tq) with dec A hp (𝟘ᵣ)
---   -- ... | yes x = {!   !}
---   -- ... | no x = {!   !}
+  data Num : Set where
+    zeroN : Num
+    oneN : Num
 
---   -- dokaz, da mnozenje dveh nenicelnih stopnji sesteje
+  _+m_ : (a : Num) → (b : Num) → Num
+  zeroN +m b = b
+  oneN +m zeroN = oneN
+  oneN +m oneN = zeroN
+  _*m_ : (a : Num) → (b : Num) → Num
+  zeroN *m b = zeroN
+  oneN *m b = b
 
---   -- multiplication of two polynomials results in a polynomial with degree equal to the sum of degrees of starting polynomials
---   ·ₚ-degree : (p : NonZeroPoly A) → (q : NonZeroPoly A) → degree (·ₚ (non𝟘ₚ p) (non𝟘ₚ q)) ≡ (degree (non𝟘ₚ p)) + (degree (non𝟘ₚ q))
---   ·ₚ-degree (ld a x) q = ·ₖₒₙₛₜ-degree a (non𝟘ₚ q) x
+  -rm_ : (a : Num)  → Num
+  -rm zeroN = zeroN
+  -rm oneN = oneN
 
---   ·ₚ-degree (x ∷ₚ p) (ld ha pa) = begin degree (·ₚ (non𝟘ₚ (x ∷ₚ p)) (non𝟘ₚ (ld ha pa)))
---                                     ≡⟨  {! ·ₚ-commhlp  (non𝟘ₚ (x ∷ₚ p)) (non𝟘ₚ (ld ha pa)) !} ⟩ degree (·ₚ (non𝟘ₚ  (ld ha pa)) (non𝟘ₚ (x ∷ₚ p)))
---                                     ≡⟨ {!   !} ⟩ {!   !} ∎
---   ·ₚ-degree (x ∷ₚ p) (x₁ ∷ₚ q) = {!   !}
+  -rml : (m : Num) → (-rm m) +m m ≡ zeroN
+  -rml zeroN = refl
+  -rml oneN = refl
+  -rl  : (m : Num) → (-rm m) +m m ≡ zeroN
+  -rl zeroN = refl
+  -rl oneN = refl
 
+  -asl : (m : Num) → oneN *m m ≡ m
+  -asl zeroN = refl
+  -asl oneN = refl
+  -asoc : (m₁ m₂ m₃ : Num) → (m₁ *m m₂) *m m₃ ≡ m₁ *m (m₂ *m m₃)
+  -asoc zeroN b c = refl
+  -asoc oneN b c = refl
+  -comm : (m₁ m₂ : Num) → m₁ *m m₂ ≡  m₂ *m m₁
+  -comm zeroN zeroN = refl
+  -comm zeroN oneN = refl
+  -comm oneN zeroN = refl
+  -comm oneN oneN = refl
+  -wlm : (m : Num) → zeroN +m m ≡ m
+  -wlm a = refl
+  -a+m : (m₁ m₂ m₃ : Num) → (m₁ +m m₂) +m m₃ ≡ m₁ +m (m₂ +m m₃)
+  -a+m zeroN b c = refl
+  -a+m oneN zeroN c = refl
+  -a+m oneN oneN zeroN = refl
+  -a+m oneN oneN oneN = refl
+  -+cm : (m₁ m₂ : Num) → m₁ +m m₂ ≡  m₂ +m m₁
+  -+cm zeroN zeroN = refl
+  -+cm zeroN oneN = refl
+  -+cm oneN zeroN = refl
+  -+cm oneN oneN = refl
+  -dm : (m₁ m₂ m₃ : Num) → m₃ *m (m₁ +m m₂) ≡ (m₃ *m m₁) +m (m₃ *m m₂)
+  -dm a b zeroN = refl
+  -dm a b oneN = refl
+  -decm : (x y : Num) → Dec(x ≡ y)
+  -decm zeroN zeroN = yes refl
+  -decm zeroN oneN = no λ ()
+  -decm oneN zeroN = no λ ()
+  -decm oneN oneN = yes refl
+  -nzdm : {x y : Num}  → ¬ (x ≡ zeroN) → ¬ (y ≡ zeroN) → ¬ ((x *m y) ≡ zeroN)
+  -nzdm {zeroN} {zeroN} a b = b
+  -nzdm {zeroN} {oneN} a b = a
+  -nzdm {oneN} {y} a b = b
 
+  -1ni𝟘 : ¬ (oneN ≡ zeroN)
+  -1ni𝟘 ()
 
-
-
-
-
-
---   -- 1ₚ≠𝟘ₚ : {A : Ring } → ¬  (1ₚ  ≡ 𝟘ₚ)
---   -- 1ₚ≠𝟘ₚ  = {!   !}
-
---   -- -ᵣ_ : M → M
-
---   -- -ᵣ-left  : (m : M) → (-ᵣ m) +ᵣ m ≡ 𝟘ᵣ
---   -- nonzeroring
---   -- 𝟙ᵣ≠𝟘ᵣ :  ¬ (𝟙ᵣ ≡ 𝟘ᵣ)
---   -- ring laws
---   -- 𝟙ᵣ-left  : (m : M) → 𝟙ᵣ · m ≡ m
---   -- ·-assoc : (m₁ m₂ m₃ : M) → (m₁ · m₂) · m₃ ≡ m₁ · (m₂ · m₃)
---   -- ·-comm : (m₁ m₂ : M) → m₁ · m₂ ≡  m₂ · m₁
-
---   -- ω-left  : (m : M) → 𝟘ᵣ +ᵣ m ≡ m
---   -- +-assoc : (m₁ m₂ m₃ : M) → (m₁ +ᵣ m₂) +ᵣ m₃ ≡ m₁ +ᵣ (m₂ +ᵣ m₃)
---   -- +-comm : (m₁ m₂ : M) → m₁ +ᵣ m₂ ≡  m₂ +ᵣ m₁
-
---   -- dist-l : (m₁ m₂ m₃ : M) → m₃ · (m₁ +ᵣ m₂) ≡ (m₃ · m₁) +ᵣ (m₃ · m₂)
-
---   -- dec : (x y : M) → Dec(x ≡ y)
---   -- no zero divisors
---   -- nzd : {x y : M}  → ¬ (x ≡ 𝟘ᵣ) → ¬ (y ≡ 𝟘ᵣ) → ¬ ((x · y) ≡ 𝟘ᵣ)
-
-
-
---   data Num : Set where
---     zeroN : Num
---     oneN : Num
-
---   _+m_ : (a : Num) → (b : Num) → Num
---   zeroN +m b = b
---   oneN +m zeroN = oneN
---   oneN +m oneN = zeroN
---   _*m_ : (a : Num) → (b : Num) → Num
---   zeroN *m b = zeroN
---   oneN *m b = b
-
---   -rm_ : (a : Num)  → Num
---   -rm zeroN = zeroN
---   -rm oneN = oneN
-
---   -rml : (m : Num) → (-rm m) +m m ≡ zeroN
---   -rml zeroN = refl
---   -rml oneN = refl
---   -rl  : (m : Num) → (-rm m) +m m ≡ zeroN
---   -rl zeroN = refl
---   -rl oneN = refl
-
---   -asl : (m : Num) → oneN *m m ≡ m
---   -asl zeroN = refl
---   -asl oneN = refl
---   -asoc : (m₁ m₂ m₃ : Num) → (m₁ *m m₂) *m m₃ ≡ m₁ *m (m₂ *m m₃)
---   -asoc zeroN b c = refl
---   -asoc oneN b c = refl
---   -comm : (m₁ m₂ : Num) → m₁ *m m₂ ≡  m₂ *m m₁
---   -comm zeroN zeroN = refl
---   -comm zeroN oneN = refl
---   -comm oneN zeroN = refl
---   -comm oneN oneN = refl
---   -wlm : (m : Num) → zeroN +m m ≡ m
---   -wlm a = refl
---   -a+m : (m₁ m₂ m₃ : Num) → (m₁ +m m₂) +m m₃ ≡ m₁ +m (m₂ +m m₃)
---   -a+m zeroN b c = refl
---   -a+m oneN zeroN c = refl
---   -a+m oneN oneN zeroN = refl
---   -a+m oneN oneN oneN = refl
---   -+cm : (m₁ m₂ : Num) → m₁ +m m₂ ≡  m₂ +m m₁
---   -+cm zeroN zeroN = refl
---   -+cm zeroN oneN = refl
---   -+cm oneN zeroN = refl
---   -+cm oneN oneN = refl
---   -dm : (m₁ m₂ m₃ : Num) → m₃ *m (m₁ +m m₂) ≡ (m₃ *m m₁) +m (m₃ *m m₂)
---   -dm a b zeroN = refl
---   -dm a b oneN = refl
---   -decm : (x y : Num) → Dec(x ≡ y)
---   -decm zeroN zeroN = yes refl
---   -decm zeroN oneN = no λ ()
---   -decm oneN zeroN = no λ ()
---   -decm oneN oneN = yes refl
---   -nzdm : {x y : Num}  → ¬ (x ≡ zeroN) → ¬ (y ≡ zeroN) → ¬ ((x *m y) ≡ zeroN)
---   -nzdm {zeroN} {zeroN} a b = b
---   -nzdm {zeroN} {oneN} a b = a
---   -nzdm {oneN} {y} a b = b
-
---   -1ni𝟘 : ¬ (oneN ≡ zeroN)
---   -1ni𝟘 ()
-
---   ring2 : Ring
---   ring2 = record { M = Num
---       ; 𝟙ᵣ = oneN ;
---       _·_  = _*m_  ;
---       𝟘 = zeroN;
---       _+_ = _+m_    ;
---       -_ = -rm_ ;
---       --left = -rl ;
---       1-left  = -asl ;
---       ·-assoc = -asoc ;
---       ·-comm = -comm ;
---       ω-left  = -wlm ;
---       +-assoc = -a+m ;
---       +-comm = -+cm ;
---       dist-l = -dm ;
---       dec = -decm ;
---       nzd = -nzdm ;
---       𝟙ᵣ≠𝟘ᵣ = -1ni𝟘
---                   }
-
---   t1_p : Poly ring2
---   t1_p = 𝟘ₚ
---   t1_q : Poly ring2
---   t1_q = 𝟘ₚ
---   test1 : (t1_p +ₚ t1_q) ≡ 𝟘ₚ
---   test1 = refl
---   --  testi za  +ₚ
---   hlp : ¬ (oneN ≡ zeroN)
---   hlp ()
+  ring2 : Ring
+  ring2 = record { M = Num
+      ; 𝟙 = oneN ;
+      _·_  = _*m_  ;
+      𝟘 = zeroN;
+      _+_ = _+m_    ;
+      -_ = -rm_ ;
+      -left = -rl ;
+      𝟙-left  = -asl ;
+      ·-assoc = -asoc ;
+      ·-comm = -comm ;
+      ω-left  = -wlm ;
+      +-assoc = -a+m ;
+      +-comm = -+cm ;
+      dist-l = -dm ;
+      dec = -decm ;
+      nzd = -nzdm ;
+      𝟙≠𝟘 = -1ni𝟘
+                  }
+  -- t1_p : Poly ring2
+  -- t1_p = 𝟘ₚ
+  -- t1_q : Poly ring2
+  -- t1_q = 𝟘ₚ
+  -- test1 : (t1_p +ₚ t1_q) ≡ 𝟘ₚ
+  -- test1 = refl
+  -- --  testi za  +ₚ
+  -- hlp : ¬ (oneN ≡ zeroN)
+  -- hlp ()
 
 
---   t2_p : Poly ring2
---   t2_p = non𝟘ₚ (zeroN ∷ₚ (oneN ∷ₚ (oneN ∷ₚ (ld oneN   hlp ))))
---   t2_q : Poly ring2
---   t2_q = non𝟘ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp))))
---   test2 : (t2_p +ₚ t2_q) ≡ non𝟘ₚ (zeroN ∷ₚ (ld oneN hlp))
---   test2 = refl
+  -- t2_p : Poly ring2
+  -- t2_p = non𝟘ₚ (zeroN ∷ₚ (oneN ∷ₚ (oneN ∷ₚ (ld oneN   hlp ))))
+  -- t2_q : Poly ring2
+  -- t2_q = non𝟘ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp))))
+  -- test2 : (t2_p +ₚ t2_q) ≡ non𝟘ₚ (zeroN ∷ₚ (ld oneN hlp))
+  -- test2 = refl
 
---   --  testi za  ·ₚ
---   t4_p : Poly ring2
---   t4_p = non𝟘ₚ (ld oneN  hlp )
---   t4_q : Poly ring2
---   t4_q = non𝟘ₚ (ld oneN hlp )
---   test4 : (·ₚ t4_p  t4_q) ≡ t4_p
---   test4 = refl
+  -- --  testi za  ·ₚ
+  -- t4_p : Poly ring2
+  -- t4_p = non𝟘ₚ (ld oneN  hlp )
+  -- t4_q : Poly ring2
+  -- t4_q = non𝟘ₚ (ld oneN hlp )
+  -- test4 : (·ₚ t4_p  t4_q) ≡ t4_p
+  -- test4 = refl
 
---   t3_p : Poly ring2
---   t3_p = non𝟘ₚ (zeroN ∷ₚ (oneN ∷ₚ (oneN ∷ₚ (ld oneN  hlp ))))
---   t3_q : Poly ring2
---   t3_q = non𝟘ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp ))))
---   test3 : (·ₚ t3_p  t3_q) ≡ non𝟘ₚ (zeroN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ(oneN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ (ld oneN hlp)))))))
---   test3 = refl
+  -- t3_p : Poly ring2
+  -- t3_p = non𝟘ₚ (zeroN ∷ₚ (oneN ∷ₚ (oneN ∷ₚ (ld oneN  hlp ))))
+  -- t3_q : Poly ring2
+  -- t3_q = non𝟘ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp ))))
+  -- test3 : (·ₚ t3_p  t3_q) ≡ non𝟘ₚ (zeroN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ(oneN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ (ld oneN hlp)))))))
+  -- test3 = refl
