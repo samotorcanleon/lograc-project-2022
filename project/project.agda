@@ -140,7 +140,7 @@ module _ (A : Ring) where
     𝟘ₚ : Poly
     non𝟘ₚ : NonZeroPoly → Poly
 
-module _ (A : Ring) where
+module polynomialDefinition (A : Ring) where
   open Ring A renaming (𝟘 to 𝟘ᵣ; 𝟙 to 𝟙ᵣ; _+_ to _+ᵣ_; _·_ to _·ᵣ_; 𝟙≠𝟘 to 𝟙ᵣ≠𝟘ᵣ; 𝟙-left to 𝟙ᵣ-left; ·-comm to ·ᵣ-comm)
   open RingProofs {A}
 
@@ -586,7 +586,8 @@ module _ (A : Ring) where
   x·ₚ-deg (x ∷ₚ a) = cong suc refl
 
 module testZ2 where
-
+  
+  
   data Num : Set where
     zeroN : Num
     oneN : Num
@@ -668,35 +669,37 @@ module testZ2 where
       nzd = -nzdm ;
       𝟙≠𝟘 = -1ni𝟘
                   }
-  -- t1_p : Poly ring2
-  -- t1_p = 𝟘ₚ
-  -- t1_q : Poly ring2
-  -- t1_q = 𝟘ₚ
-  -- test1 : (t1_p +ₚ t1_q) ≡ 𝟘ₚ
-  -- test1 = refl
-  -- --  testi za  +ₚ
-  -- hlp : ¬ (oneN ≡ zeroN)
-  -- hlp ()
 
+  open polynomialDefinition (ring2)
 
-  -- t2_p : Poly ring2
-  -- t2_p = non𝟘ₚ (zeroN ∷ₚ (oneN ∷ₚ (oneN ∷ₚ (ld oneN   hlp ))))
-  -- t2_q : Poly ring2
-  -- t2_q = non𝟘ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp))))
-  -- test2 : (t2_p +ₚ t2_q) ≡ non𝟘ₚ (zeroN ∷ₚ (ld oneN hlp))
-  -- test2 = refl
+  t1_p : Poly ring2
+  t1_p = 𝟘ₚ
+  t1_q : Poly ring2
+  t1_q = 𝟘ₚ
+  test1 : (t1_p +ₚ t1_q) ≡ 𝟘ₚ
+  test1 = refl
+  --  testi za  +ₚ
+  hlp : ¬ (oneN ≡ zeroN)
+  hlp ()
 
-  -- --  testi za  ·ₚ
-  -- t4_p : Poly ring2
-  -- t4_p = non𝟘ₚ (ld oneN  hlp )
-  -- t4_q : Poly ring2
-  -- t4_q = non𝟘ₚ (ld oneN hlp )
-  -- test4 : (·ₚ t4_p  t4_q) ≡ t4_p
-  -- test4 = refl
+  t2_p : Poly ring2
+  t2_p = non𝟘ₚ (zeroN ∷ₚ (oneN ∷ₚ (oneN ∷ₚ (ld oneN   hlp ))))
+  t2_q : Poly ring2
+  t2_q = non𝟘ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp))))
+  test2 : (t2_p +ₚ t2_q) ≡ non𝟘ₚ (zeroN ∷ₚ (ld oneN hlp))
+  test2 = refl
 
-  -- t3_p : Poly ring2
-  -- t3_p = non𝟘ₚ (zeroN ∷ₚ (oneN ∷ₚ (oneN ∷ₚ (ld oneN  hlp ))))
-  -- t3_q : Poly ring2
-  -- t3_q = non𝟘ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp ))))
-  -- test3 : (·ₚ t3_p  t3_q) ≡ non𝟘ₚ (zeroN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ(oneN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ (ld oneN hlp)))))))
-  -- test3 = refl
+  --  testi za  ·ₚ
+  t4_p : Poly ring2
+  t4_p = non𝟘ₚ (ld oneN  hlp )
+  t4_q : Poly ring2
+  t4_q = non𝟘ₚ (ld oneN hlp )
+  test4 : (·ₚ t4_p  t4_q) ≡ t4_p
+  test4 = refl
+
+  t3_p : Poly ring2
+  t3_p = non𝟘ₚ (zeroN ∷ₚ (oneN ∷ₚ (oneN ∷ₚ (ld oneN  hlp ))))
+  t3_q : Poly ring2
+  t3_q = non𝟘ₚ (zeroN ∷ₚ (zeroN ∷ₚ (oneN ∷ₚ (ld oneN hlp ))))
+  test3 : (·ₚ t3_p  t3_q) ≡ non𝟘ₚ (zeroN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ(oneN ∷ₚ(zeroN ∷ₚ(zeroN ∷ₚ (ld oneN hlp)))))))
+  test3 = refl
