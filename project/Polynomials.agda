@@ -46,7 +46,7 @@ module Polynomials (A : Ring) where
   ... | just res = non𝟘ₚ res
   ... | nothing = 𝟘ₚ
 
--- ////////////  INVERSE ////////////
+-- ////////////  INVERSE for addition ////////////
   -ₚh :  (p : NonZeroPoly) → NonZeroPoly
   -ₚh  (ld a x) = ld (-ᵣ a)  (n0→n0  a x)
   -ₚh  (x ∷ₚ p) = (-ᵣ x) ∷ₚ (-ₚh p)
