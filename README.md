@@ -14,7 +14,7 @@ Files located in `project/` are :
 
 * `PolynomialsProperties.agda`: contains all sorts of proofs regarding polynomials. Among other things the most important are proof of commutativity of addition and even more commutativity of multiplication.
 
-* `Z2.agda`: implementation of ring $Z_2$ with test cases for polynomials over $Z_2$.
+* `Z2.agda`: implementation of ring $\mathbb{Z}_2$ with test cases for polynomials over $\mathbb{Z}_2$.
 
-* `Z5.agda`: implementation of ring $Z_5$ with test cases for polynomials over $Z_5$.
+* `Z5.agda`: implementation of ring $\mathbb{Z}_5$ with test cases for polynomials over $\mathbb{Z}_5$.
 
