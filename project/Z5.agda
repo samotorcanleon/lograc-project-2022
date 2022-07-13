@@ -1,6 +1,6 @@
 
 
-module nekiprobavam where 
+module Z5 where 
 -- open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _≤_; z≤n; s≤s)
 -- open import Data.List using (List; []; _∷_; length)
 
