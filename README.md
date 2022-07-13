@@ -4,7 +4,7 @@ This repository contains formalization of polynomials in agda:
 
 * `project/`: contains all of the agda code
 
-Files someone will find in `project/` are :
+Files located in `project/` are :
 
 * `Ring.agda`: contains definition of a ring
 
