@@ -1,13 +1,20 @@
-# Logika v računalništvu student project polynomials
+# Logika v računalništvu student project Polynomials
 
 This repository contains formalization of polynomials in agda:
 
 * `project/`: contains all of the agda code
 
-Files to look after are:
+Files someone will find in `project/` are :
 
-* `project.agda`: Contains definition of a ring, some properties of ring, definition of Polynomials and operations $+_p$ and $*_p$ on them.
-In this file one can also find unfinished proof for commutativity of * on polynomials. The proof is turning out to be tedious since  
-agda forgets already computed values (like that some variable is nonzero). Rewriting does not always work (or we are doing something wrong). Additionaly 'cong' also does not act very smart, since we have to put implicit arguments to it often by force (which is annoying when we have long expressions as arguments). At the end of file is a simple example of a ring $Z_2$ and a few test cases. 
+* `Ring.agda`: contains definition of a ring
 
-* `noviplus2.agda`: This file contains duplicate of definitions of operations and ring. Additional ring properties are proved. Then follows proof of commutativity for $+_p$ and not so succesful proof for asociativity of $+_p$.  At the end there is proof that $-_p$ operation is inverse for polynomial addition.
+* `RingProperties.agda`: contains proofs for properties of a ring which are used when proving properties of polinomials.
+
+* `Polynomials.agda`: contains definition of Polynomial type and the following operations on polynomials: addition, inverse for addition, multiplication and degree.
+
+* `PolynomialsProperties.agda`: contains all sorts of proofs regarding polynomials. Among other things the most important are proof of commutativity of addition and even more commutativity of multiplication.
+
+* `Z2.agda`: implementation of ring $Z_2$ with test cases for polynomials over $Z_2$.
+
+* `Z5.agda`: implementation of ring $Z_5$ with test cases for polynomials over $Z_5$.
+
