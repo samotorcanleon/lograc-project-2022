@@ -8,7 +8,7 @@ Files located in `project/` are :
 
 * `Ring.agda`: contains definition of a ring
 
-* `RingProperties.agda`: contains proofs for properties of a ring which are used when proving properties of polinomials.
+* `RingProperties.agda`: contains proofs of ring properties which are used when proving properties of polinomials.
 
 * `Polynomials.agda`: contains definition of Polynomial type and the following operations on polynomials: addition, inverse for addition, multiplication and degree.
 
