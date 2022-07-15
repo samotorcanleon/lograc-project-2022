@@ -107,7 +107,7 @@ module PolynomialsProperties (A : Ring) where
 -- ////////////  ADDITION - associativity ////////////
   -- write an apology here
   postulate +ₚ-asoc : (p q r : Poly ) → p +ₚ (q +ₚ r) ≡ (p +ₚ q) +ₚ r
-  -- associativity turned out to complex to prove because of big number of cases to consider
+  -- associativity turned out too complex to prove because of big number of cases to consider
   -- still we proved a property "(addp q p ≡ addp r p) → q ≡ r" which covers a lot of these cases 
   -- (in case someone would consider tackling the associativity proof ;) )
 
@@ -258,8 +258,8 @@ module PolynomialsProperties (A : Ring) where
   x·ₚ-deg (x ∷ₚ a) = cong suc refl
 
 -- ////////////  MULTIPLICATION - commutativity  ////////////
--- Tip for future agda conqerers: always call all induction steps in the outer most with abstraction otherwise
--- agda will shove her termination checking problems and surprise you with them when you least expect
+-- Tip for future agda conquerors: always call all induction steps in the outer most with abstraction otherwise
+-- agda will shove its termination checking problems and surprise you with them when you least expect
 
   merge :  (hb : M) → (tb : NonZeroPoly ) → (pb : ¬ (hb ≡ (𝟘ᵣ))) → (non𝟘ₚ (hb ∷ₚ tb) ≡ non𝟘ₚ (ld hb pb) +ₚ (x·ₚ (non𝟘ₚ tb)))
   merge h t p = cong non𝟘ₚ (cong₂ _∷ₚ_ (sym (𝟘-right h)) refl)
@@ -338,7 +338,7 @@ module PolynomialsProperties (A : Ring) where
   a=e:ab=e a b p = trans (·ᵣ-comm a b) (b=e:ab=e b a p)
 
 
-  --multiplication commutativity
+  --multiplication commutativity for nonzero polynomials
   ·ₚ-commhlp : (p q : NonZeroPoly ) → (·ₚ (non𝟘ₚ p)  (non𝟘ₚ q)) ≡ (·ₚ (non𝟘ₚ q) (non𝟘ₚ p))
   ·ₚ-commhlp (ld a pa) (ld b pb) with  (dec a 𝟘ᵣ) | dec b 𝟘ᵣ
   ... | yes x₁ | yes x₂ = refl
