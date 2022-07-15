@@ -260,7 +260,6 @@ module PolynomialsProperties (A : Ring) where
 -- ////////////  MULTIPLICATION - commutativity  ////////////
 -- Tip for future agda conquerors: always call all induction steps in the outer most with abstraction otherwise
 -- agda will shove its termination checking problems and surprise you with them when you least expect
-
   merge :  (hb : M) → (tb : NonZeroPoly ) → (pb : ¬ (hb ≡ (𝟘ᵣ))) → (non𝟘ₚ (hb ∷ₚ tb) ≡ non𝟘ₚ (ld hb pb) +ₚ (x·ₚ (non𝟘ₚ tb)))
   merge h t p = cong non𝟘ₚ (cong₂ _∷ₚ_ (sym (𝟘-right h)) refl)
 
@@ -420,20 +419,20 @@ module PolynomialsProperties (A : Ring) where
   ... | yes x₁ | yes x₂ | [ eqbe ] | commxy | commxby | commyax | commxey = cong x·ₚ (begin ·ₚ (non𝟘ₚ x) (non𝟘ₚ (b ∷ₚ y)) 
                                                                                                   ≡⟨ cong₂ ·ₚ {(non𝟘ₚ x)} {(non𝟘ₚ x)} {(non𝟘ₚ (b ∷ₚ y))} {(non𝟘ₚ (𝟘ᵣ ∷ₚ y))} refl (cong non𝟘ₚ (cong₂ _∷ₚ_ x₂ refl)) ⟩
                                                                                             ·ₚ (non𝟘ₚ x) (non𝟘ₚ (𝟘ᵣ ∷ₚ y)) 
-                                                                                                  ≡⟨ trans (sym helppls) help22 ⟩
+                                                                                                  ≡⟨ trans (sym subst_zero) split_product ⟩
                                                                                             ·ₚ (non𝟘ₚ (𝟘ᵣ ∷ₚ x)) (non𝟘ₚ y) 
-                                                                                                  ≡⟨ help ⟩
+                                                                                                  ≡⟨ factorize ⟩
                                                                                             ·ₚ (non𝟘ₚ y) (non𝟘ₚ ((𝟘ᵣ) ∷ₚ x))  
                                                                                                   ≡⟨ sym (cong₂ ·ₚ {(non𝟘ₚ y)} {(non𝟘ₚ y)} {(non𝟘ₚ (a ∷ₚ x))} {(non𝟘ₚ (𝟘ᵣ ∷ₚ x))} refl (cong non𝟘ₚ (cong₂ _∷ₚ_ x₁ refl))) ⟩
                                                                                             ·ₚ (non𝟘ₚ y) (non𝟘ₚ (a ∷ₚ x)) 
                                                                                             ∎)
 
               where
-                helppls : ·ₚ (non𝟘ₚ x) (non𝟘ₚ (b ∷ₚ y)) ≡ ·ₚ (non𝟘ₚ x) (non𝟘ₚ (𝟘ᵣ ∷ₚ y))
-                helppls =  cong₂ ·ₚ {(non𝟘ₚ x)} {(non𝟘ₚ x)} {(non𝟘ₚ (b ∷ₚ y))} {(non𝟘ₚ (𝟘ᵣ ∷ₚ y))} refl (cong non𝟘ₚ (cong₂ _∷ₚ_ x₂ refl))
+                subst_zero : ·ₚ (non𝟘ₚ x) (non𝟘ₚ (b ∷ₚ y)) ≡ ·ₚ (non𝟘ₚ x) (non𝟘ₚ (𝟘ᵣ ∷ₚ y))
+                subst_zero =  cong₂ ·ₚ {(non𝟘ₚ x)} {(non𝟘ₚ x)} {(non𝟘ₚ (b ∷ₚ y))} {(non𝟘ₚ (𝟘ᵣ ∷ₚ y))} refl (cong non𝟘ₚ (cong₂ _∷ₚ_ x₂ refl))
 
-                help22 : ·ₚ (non𝟘ₚ x) (non𝟘ₚ (b ∷ₚ y)) ≡ (·ₖₒₙₛₜ 𝟘ᵣ (non𝟘ₚ y)) +ₚ x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y))
-                help22  with  dec 𝟘ᵣ 𝟘ᵣ | inspect (dec 𝟘ᵣ) 𝟘ᵣ
+                split_product : ·ₚ (non𝟘ₚ x) (non𝟘ₚ (b ∷ₚ y)) ≡ (·ₖₒₙₛₜ 𝟘ᵣ (non𝟘ₚ y)) +ₚ x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y))
+                split_product  with  dec 𝟘ᵣ 𝟘ᵣ | inspect (dec 𝟘ᵣ) 𝟘ᵣ
                 ... | yes e𝟘=e𝟘 | [ eq ] rewrite eq = begin ·ₚ (non𝟘ₚ x) (non𝟘ₚ (b ∷ₚ y)) 
                                                                   ≡⟨ commxby ⟩
                                                              x·ₚ (·ₚ (non𝟘ₚ y) (non𝟘ₚ x)) 
@@ -445,12 +444,12 @@ module PolynomialsProperties (A : Ring) where
                 ... | ()
 
 
-                help : (·ₖₒₙₛₜ 𝟘ᵣ (non𝟘ₚ y)) +ₚ x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)) ≡ ·ₚ (non𝟘ₚ y) (non𝟘ₚ (𝟘ᵣ ∷ₚ x))
-                help with dec 𝟘ᵣ 𝟘ᵣ | inspect (dec 𝟘ᵣ) 𝟘ᵣ
+                factorize : (·ₖₒₙₛₜ 𝟘ᵣ (non𝟘ₚ y)) +ₚ x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)) ≡ ·ₚ (non𝟘ₚ y) (non𝟘ₚ (𝟘ᵣ ∷ₚ x))
+                factorize with dec 𝟘ᵣ 𝟘ᵣ | inspect (dec 𝟘ᵣ) 𝟘ᵣ
                 ... | yes p | [ eq ]  = begin x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)) 
                                                     ≡⟨ refl ⟩
                                               𝟘ₚ +ₚ x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)) 
-                                                    ≡⟨ morehelp ⟩
+                                                    ≡⟨ split ⟩
                                               (·ₖₒₙₛₜ 𝟘ᵣ (non𝟘ₚ y)) +ₚ x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)) 
                                                     ≡⟨⟩
                                               ·ₚ (non𝟘ₚ ((𝟘ᵣ) ∷ₚ x)) (non𝟘ₚ y) 
@@ -458,8 +457,8 @@ module PolynomialsProperties (A : Ring) where
                                               ·ₚ (non𝟘ₚ y) (non𝟘ₚ (𝟘ᵣ ∷ₚ x)) 
                                               ∎
                           where
-                            morehelp : x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)) ≡ ((·ₖₒₙₛₜ 𝟘ᵣ (non𝟘ₚ y)) +ₚ x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)))
-                            morehelp with dec 𝟘ᵣ 𝟘ᵣ
+                            split : x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)) ≡ ((·ₖₒₙₛₜ 𝟘ᵣ (non𝟘ₚ y)) +ₚ x·ₚ (·ₚ (non𝟘ₚ x) (non𝟘ₚ y)))
+                            split with dec 𝟘ᵣ 𝟘ᵣ
                             ... | yes x = cong x·ₚ refl
 
                 ... | no p | [ eq ] with ¬-elim p e𝟘=e𝟘
