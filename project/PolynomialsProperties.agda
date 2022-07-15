@@ -39,68 +39,68 @@ module PolynomialsProperties (A : Ring) where
 
 -- ////////////  ADDITION - commutativity ////////////
   addp-comm :  (p q : NonZeroPoly ) → addp p q ≡ addp q p 
-  addp-comm (ld a x) (ld b y) with ( dec  (a +ᵣ b) 𝟘ᵣ) | inspect ( dec (a +ᵣ b) ) 𝟘ᵣ
-  ... | no p | [ eq ] with dec  (b +ᵣ a) 𝟘ᵣ
-  ... | no p2 =  cong just (dcong₂ ld (((+-comm ) a b)) refl) 
-  ... | yes p2 with p (a+b=b+a=e b a p2 )
+  addp-comm (ld a a≠0) (ld b b≠0) with ( dec  (a +ᵣ b) 𝟘ᵣ) | inspect ( dec (a +ᵣ b) ) 𝟘ᵣ
+  ... | no a+b≠0 | [ eq ] with dec (b +ᵣ a) 𝟘ᵣ
+  ... | no b+a≠0 =  cong just (dcong₂ ld (((+-comm ) a b)) refl) 
+  ... | yes b+a=0 with a+b≠0 (a+b=b+a=e b a b+a=0)
   ... | ()
-  addp-comm (ld a x) (ld b y) | yes p | [ eq ] with ( dec  (b +ᵣ a) 𝟘ᵣ) | inspect ( dec (b +ᵣ a) ) 𝟘ᵣ
-  ... | yes x₁ | [ eq₁ ] = refl
-  ... | no p2 | [ eq₁ ] with ¬-elim p2 (a+b=b+a=e a b p)
+  addp-comm (ld a a≠0) (ld b b≠0) | yes a+b=0 | [ eq ] with ( dec  (b +ᵣ a) 𝟘ᵣ) | inspect ( dec (b +ᵣ a) ) 𝟘ᵣ
+  ... | yes b+a=0 | [ eq ] = refl
+  ... | no b+a≠0 | [ eq ] with ¬-elim b+a≠0 (a+b=b+a=e a b a+b=0)
   ... | ()
-  addp-comm  (ld a x) (x₁ ∷ₚ q) = cong just refl
-  addp-comm  (x ∷ₚ p) (ld a x₁) = cong just refl
-  addp-comm  (a ∷ₚ p) (b ∷ₚ q) with addp p q | inspect (addp p) q | addp q p | inspect (addp q) p
-  ... | just x | [ eq ] | just y | [ eq2 ] = cong just (cong₂ _∷ₚ_ ((+-comm ) a b) (hlp (x=yjust  eq2 eq)))
+  addp-comm  (ld a a≠0) (hq ∷ₚ tq) = cong just refl
+  addp-comm  (hp ∷ₚ tp) (ld a a≠0) = cong just refl
+  addp-comm  (hp ∷ₚ tp) (hq ∷ₚ tq) with addp tp tq | inspect (addp tp) tq | addp tq tp | inspect (addp tq) tp
+  ... | just tp+tq | [ eq₁ ] | just tq+tp | [ eq₂ ] = cong just (cong₂ _∷ₚ_ ((+-comm ) hp hq) (hlp (x=yjust eq₂ eq₁)))
     where 
-      x=yjust : addp q p ≡ just y → addp p q ≡ just x → just x ≡ just y 
-      x=yjust p1 p2 = begin just x  
+      x=yjust : addp tq tp ≡ just tq+tp → addp tp tq ≡ just tp+tq → just tp+tq ≡ just tq+tp 
+      x=yjust p1 p2 = begin just tp+tq  
                                       ≡⟨ sym p2 ⟩
-                            addp p q 
-                                      ≡⟨ addp-comm p q ⟩
-                            addp q p 
+                            addp tp tq 
+                                      ≡⟨ addp-comm tp tq ⟩
+                            addp tq tp 
                                       ≡⟨ p1 ⟩
-                            just y ∎
-      hlp : just x ≡ just y → x ≡ y 
+                            just tq+tp ∎
+      hlp : just tp+tq ≡ just tq+tp → tp+tq ≡ tq+tp 
       hlp refl = refl
 
-  ... | just x₂ | [ eq ] | nothing | [ eq₁ ] with justnoth⊥ (trans (sym eq₁) (trans  (addp-comm q p) eq))
+  ... | just tp+tq | [ eq₁ ] | nothing | [ eq₂ ] with justnoth⊥ (trans (sym eq₂) (trans  (addp-comm tq tp) eq₁))
   ... | ()
-  addp-comm  (a ∷ₚ p) (b ∷ₚ q) | nothing | [ eq ] | just x | [ eq₁ ] with justnoth⊥ (trans (sym  eq) (trans (addp-comm p q) eq₁))
+  addp-comm  (hp ∷ₚ tp) (hq ∷ₚ tq) | nothing | [ eq ] | just x | [ eq₁ ] with justnoth⊥ (trans (sym  eq) (trans (addp-comm tp tq) eq₁))
   ... | ()
-  addp-comm  (a ∷ₚ p) (b ∷ₚ q) | nothing | [ eq ] | nothing | [ eq₁ ] with ( dec (b +ᵣ a) 𝟘ᵣ) | ( dec (a +ᵣ b) 𝟘ᵣ)
-  ... | yes x | yes x₁ = refl
-  ... | yes x | no y  with ¬-elim y (a+b=b+a=e b a x)
+  addp-comm  (hp ∷ₚ tp) (hq ∷ₚ tq) | nothing | [ eq ] | nothing | [ eq₁ ] with ( dec (hq +ᵣ hp) 𝟘ᵣ) | ( dec (hp +ᵣ hq) 𝟘ᵣ)
+  ... | yes hq+hp=0 | yes hp+hq=0 = refl
+  ... | yes hq+hp=0 | no hp+hq≠0  with ¬-elim hp+hq≠0 (a+b=b+a=e hq hp hq+hp=0)
   ... | () 
-  addp-comm  (a ∷ₚ p) (b ∷ₚ q) | nothing | [ eq ] | nothing | [ eq₁ ] | no x | yes y with ¬-elim x (a+b=b+a=e   a b  y)
+  addp-comm  (hp ∷ₚ tp) (hq ∷ₚ tq) | nothing | [ eq ] | nothing | [ eq₁ ] | no x | yes y with ¬-elim x (a+b=b+a=e hp hq y)
   ... | ()
-  addp-comm  (a ∷ₚ p) (b ∷ₚ q) | nothing | [ eq ] | nothing | [ eq₁ ] | no x | no y = cong just (dcong₂ ld ((+-comm) a b) refl)
+  addp-comm  (hp ∷ₚ tp) (hq ∷ₚ tq) | nothing | [ eq ] | nothing | [ eq₁ ] | no x | no y = cong just (dcong₂ ld ((+-comm) hp hq) refl)
 
 
 
 
   +ₚ-comm : (p q : Poly ) → p +ₚ q ≡ q +ₚ p 
   +ₚ-comm 𝟘ₚ 𝟘ₚ = refl
-  +ₚ-comm  𝟘ₚ (non𝟘ₚ x) = refl
-  +ₚ-comm  (non𝟘ₚ x) 𝟘ₚ = refl
+  +ₚ-comm  𝟘ₚ (non𝟘ₚ p) = refl
+  +ₚ-comm  (non𝟘ₚ p) 𝟘ₚ = refl
   +ₚ-comm  (non𝟘ₚ p) (non𝟘ₚ q) with addp p q | inspect (addp p) q | addp q p | inspect (addp q) p
-  ... | just x | [ eq ] | just y | [ eq₁ ] = cong non𝟘ₚ (hlp (x=yjust eq₁ eq))
+  ... | just p+q | [ eq₁ ] | just q+p | [ eq₂ ] = cong non𝟘ₚ (hlp (x=yjust eq₂ eq₁))
     where 
-      x=yjust : addp q p ≡ just y → addp p q ≡ just x → just x ≡ just y 
-      x=yjust p1 p2 = begin just x   
+      x=yjust : addp q p ≡ just q+p → addp p q ≡ just p+q → just p+q ≡ just q+p 
+      x=yjust p1 p2 = begin just p+q   
                                       ≡⟨ sym p2 ⟩
                             addp p q 
                                       ≡⟨ addp-comm p q ⟩
                             addp q p 
                                       ≡⟨ p1 ⟩
-                            just y ∎
-      hlp : just x ≡ just y → x ≡ y 
+                            just q+p ∎
+      hlp : just p+q ≡ just q+p → p+q ≡ q+p 
       hlp refl = refl
-  ... | just x | [ eq ] | nothing | [ eq₁ ] with justnoth⊥ (trans (sym eq₁) (trans (addp-comm q p) eq))
+  ... | just p+q | [ eq₁ ] | nothing | [ eq₂ ] with justnoth⊥ (trans (sym eq₂) (trans (addp-comm q p) eq₁))
   ... | ()
-  +ₚ-comm  (non𝟘ₚ p) (non𝟘ₚ q) | nothing | [ eq ] | just y | [ eq₁ ] with justnoth⊥ (sym (trans (sym eq₁) (trans (addp-comm q p) eq)))
+  +ₚ-comm  (non𝟘ₚ p) (non𝟘ₚ q) | nothing | [ eq₁ ] | just q+p | [ eq₂ ] with justnoth⊥ (sym (trans (sym eq₂) (trans (addp-comm q p) eq₁)))
   ... | ()
-  +ₚ-comm  (non𝟘ₚ p) (non𝟘ₚ q) | nothing | [ eq ] | nothing | [ eq₁ ] = refl
+  +ₚ-comm  (non𝟘ₚ p) (non𝟘ₚ q) | nothing | [ eq₁ ] | nothing | [ eq₂ ] = refl
 
 
 
@@ -604,4 +604,4 @@ module PolynomialsProperties (A : Ring) where
                                                   ≡⟨ cong x·ₚ (sym (𝟘ₚ-multi (non𝟘ₚ tx)))⟩
                                             x·ₚ (·ₚ (non𝟘ₚ tx) 𝟘ₚ) 
                                             ∎)
-  ·ₚ-comm (non𝟘ₚ x) (non𝟘ₚ y) = ·ₚ-commhlp x y
+  ·ₚ-comm (non𝟘ₚ x) (non𝟘ₚ y) = ·ₚ-commhlp x y 
