@@ -497,5 +497,53 @@ module Z5 where
       𝟙≠𝟘 = one≠zero}
 
 -- ////////////////    TESTS 	////////////////
+  open import Polynomials ℤ₅
 
-    
+  hlp1 : ¬ (one ≡ zero)
+  hlp1 ()
+
+  hlp2 : ¬ (two ≡ zero)
+  hlp2 ()
+
+  hlp3 : ¬ (three ≡ zero)
+  hlp3 ()
+
+  hlp4 : ¬ (four ≡ zero)
+  hlp4 ()
+
+  --  testi za  +ₚ
+
+  t1_p : Poly
+  t1_p = non𝟘ₚ (one ∷ₚ (three ∷ₚ (zero ∷ₚ (ld one hlp1 ))))
+  t1_q : Poly
+  t1_q = non𝟘ₚ (zero ∷ₚ (zero ∷ₚ (four ∷ₚ (one ∷ₚ (ld two hlp2)))))
+  test1 : (t1_p +ₚ t1_q) ≡ non𝟘ₚ (one ∷ₚ (three ∷ₚ (four ∷ₚ (two ∷ₚ (ld two hlp2)))))
+  test1 = refl
+
+  t2_p : Poly
+  t2_p = non𝟘ₚ (one ∷ₚ (one ∷ₚ (three ∷ₚ (zero ∷ₚ (ld three hlp3 )))))
+  t2_q : Poly
+  t2_q = non𝟘ₚ (four ∷ₚ (zero ∷ₚ (four ∷ₚ (one ∷ₚ (ld two hlp2)))))
+  test2 : (t2_p +ₚ t2_q) ≡ non𝟘ₚ (zero ∷ₚ (one ∷ₚ (two ∷ₚ (ld one hlp1))))
+  test2 = refl
+
+  t3_p : Poly
+  t3_p = non𝟘ₚ (one ∷ₚ (four ∷ₚ (three ∷ₚ (zero ∷ₚ (ld two hlp2 )))))
+  test3 : (t3_p +ₚ (-ₚ t3_p)) ≡ 𝟘ₚ 
+  test3 = refl
+
+  --  testi za ·ₚ   
+  t4_p : Poly
+  t4_p = non𝟘ₚ (one ∷ₚ (three ∷ₚ (zero ∷ₚ (ld one hlp1 ))))
+  t4_q : Poly
+  t4_q = non𝟘ₚ (zero ∷ₚ (zero ∷ₚ (four ∷ₚ (one ∷ₚ (ld two hlp2)))))
+  test4 : (·ₚ t4_p t4_q) ≡ non𝟘ₚ (zero ∷ₚ (zero ∷ₚ (four ∷ₚ (three ∷ₚ (zero ∷ₚ (zero ∷ₚ (one ∷ₚ (ld two hlp2))))))))
+  test4 = refl
+
+  t5_p : Poly
+  t5_p = non𝟘ₚ (one ∷ₚ (one ∷ₚ (three ∷ₚ (zero ∷ₚ (ld three hlp3 )))))
+  t5_q : Poly
+  t5_q = non𝟘ₚ (one ∷ₚ (zero ∷ₚ (four ∷ₚ (one ∷ₚ (ld two hlp2)))))
+  test5 : (·ₚ t5_p t5_q) ≡ non𝟘ₚ (one ∷ₚ (one ∷ₚ (two ∷ₚ (zero ∷ₚ (three ∷ₚ (zero ∷ₚ (three ∷ₚ (three ∷ₚ (ld one hlp1)))))))))
+  test5 = refl
+
