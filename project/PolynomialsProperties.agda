@@ -111,36 +111,36 @@ module PolynomialsProperties (A : Ring) where
   -- still we proved a property "(addp q p ≡ addp r p) → q ≡ r" which covers a lot of these cases 
   -- (in case someone would consider tackling the associativity proof ;) )
 
-  ∷ₚ-injh :  ∀ {a b : M } → ∀ {c d : NonZeroPoly} → (a ∷ₚ c) ≡ (b ∷ₚ d) →  a ≡ b 
+  ∷ₚ-injh :  ∀ {a b : M } → ∀ {p q : NonZeroPoly} → (a ∷ₚ p) ≡ (b ∷ₚ q) →  a ≡ b 
   ∷ₚ-injh refl = refl
 
-  ∷ₚ-injt :  ∀ {a b : M } → ∀ {c d : NonZeroPoly} → (a ∷ₚ c) ≡ (b ∷ₚ d) →  c ≡ d 
+  ∷ₚ-injt :  ∀ {a b : M } → ∀ {p q : NonZeroPoly} → (a ∷ₚ p) ≡ (b ∷ₚ q) →  p ≡ q 
   ∷ₚ-injt refl = refl
 
-  ld-inj :   ∀ {a b : M } → ∀ {c d} → (ld  a c) ≡ (ld b d) → a ≡ b
+  ld-inj :   ∀ {a b : M } → ∀ {aₚ bₚ} → (ld  a aₚ) ≡ (ld b bₚ) → a ≡ b
   ld-inj refl = refl
 
-  ∷ₚ-≡ :  {a b : M } → ∀ {c d : NonZeroPoly} → a ≡ b → c ≡ d  → (a ∷ₚ c) ≡ (b ∷ₚ d)
+  ∷ₚ-≡ :  {a b : M } → ∀ {p q : NonZeroPoly} → a ≡ b → p ≡ q  → (a ∷ₚ p) ≡ (b ∷ₚ q)
   ∷ₚ-≡  refl refl = refl 
 
-  ld-≡ :  ∀ {a b : M } → ∀ {c d} → a ≡ b → (ld  a c) ≡ (ld b d)
-  ld-≡ {a}{b}{c}{d} p with (dec) a (𝟘ᵣ)
-  ld-≡  {𝟘ᵣ} {𝟘ᵣ} {c} {d} refl | yes refl = refl
-  ld-≡  {a} {a} {c} {d} refl | no x = refl
+  ld-≡ :  ∀ {a b : M } → ∀ {aₚ bₚ} → a ≡ b → (ld  a aₚ) ≡ (ld b bₚ)
+  ld-≡ {a}{b}{aₚ}{bₚ} p with (dec) a (𝟘ᵣ)
+  ld-≡  {𝟘ᵣ} {𝟘ᵣ} {aₚ} {bₚ} refl | yes refl = refl
+  ld-≡  {a} {a} {aₚ} {bₚ} refl | no x = refl
 
   ldtl⊥ :  (p q : NonZeroPoly) → addp p q  ≡  just p → ⊥
-  ldtl⊥  (ld a x) (ld a₁ x₁) r with dec  (a +ᵣ a₁) 𝟘ᵣ
-  ... | no x₂ with x₁ (x+a=x→a=0  a a₁ (ld-inj (just-injective r)))
+  ldtl⊥  (ld a aₚ) (ld b bₚ) r with dec  (a +ᵣ b) 𝟘ᵣ
+  ... | no a+b≠0 with bₚ (x+a=x→a=0  a b (ld-inj (just-injective r)))
   ... | ()
-  ldtl⊥ (x ∷ₚ p) (ld a x₁) r  with ¬-elim x₁ (a+x=x→a=0 x a (∷ₚ-injh (just-injective r)) )
+  ldtl⊥ (hp ∷ₚ tp) (ld a aₚ) r  with ¬-elim aₚ (a+x=x→a=0 hp a (∷ₚ-injh (just-injective r)) )
   ... | ()
-  ldtl⊥ (x ∷ₚ p) (x₁ ∷ₚ q) r with addp p q | inspect (addp p ) q  
-  ... | just x₂ | [ eq ] with   (∷ₚ-injt (just-injective r))
-  ... | res rewrite res with ldtl⊥ p q eq 
+  ldtl⊥ (hp ∷ₚ tp) (hq ∷ₚ tq) r with addp tp tq | inspect (addp tp) tq  
+  ... | just tp+tq | [ eq ] with   (∷ₚ-injt (just-injective r))
+  ... | res rewrite res with ldtl⊥ tp tq eq 
   ... | () 
-  ldtl⊥  (x ∷ₚ p) (x₁ ∷ₚ q) r | nothing | [ eq ] with dec  (x +ᵣ  x₁) 𝟘ᵣ
-  ldtl⊥  (x ∷ₚ p) (x₁ ∷ₚ q) () | nothing | [ eq ] | yes x₂
-  ... | no x₂ with just-injective r 
+  ldtl⊥  (hp ∷ₚ tp) (hq ∷ₚ tq) r | nothing | [ eq ] with dec  (hp +ᵣ hq) 𝟘ᵣ
+  ldtl⊥  (hp ∷ₚ tp) (hq ∷ₚ tq) () | nothing | [ eq ] | yes hp+hq=0
+  ... | no hp+hq≠0 with just-injective r 
   ... | () 
 
   ldtl⊥sym :  (p q : NonZeroPoly) → addp q p  ≡  just p → ⊥
@@ -148,19 +148,19 @@ module PolynomialsProperties (A : Ring) where
   ... | ()
 
   addpinj : (p q r : NonZeroPoly) → addp q p ≡ addp r p  → q ≡ r 
-  addpinj  (ld a pa) (ld b pb) (ld c pc) h with (dec ) (b +ᵣ  a) 𝟘ᵣ  | (dec ) (c +ᵣ  a) 𝟘ᵣ 
-  ... | yes x | yes x₁ = dcong₂ ld (a+x=0=b+x→a=b  a b c x x₁) refl
-  ... | no x | no x₁ = dcong₂ ld (a+x=b+x→a=b  a b c (ld-inj hlp)) refl
+  addpinj  (ld a aₚ) (ld b bₚ) (ld c cₚ) h with (dec (b +ᵣ a)) 𝟘ᵣ  | (dec (c +ᵣ a)) 𝟘ᵣ 
+  ... | yes b+a=0 | yes c+a=0 = dcong₂ ld (a+x=0=b+x→a=b  a b c b+a=0 c+a=0) refl
+  ... | no b+a≠0 | no c+a≠0 = dcong₂ ld (a+x=b+x→a=b  a b c (ld-inj hlp)) refl
     where
-      hlp :  (ld (b +ᵣ a) x) ≡  (ld (c +ᵣ a) x₁)
+      hlp :  (ld (b +ᵣ a) b+a≠0) ≡  (ld (c +ᵣ a) c+a≠0)
       hlp = just-injective h
-  addpinj  (ld a pa) (ld b pb) (c ∷ₚ tc) h with dec  (b +ᵣ  a) 𝟘ᵣ
-  addpinj  (ld a pa) (ld b pb) (c ∷ₚ tc) () | yes x
-  addpinj  (ld a pa) (ld b pb) (c ∷ₚ tc) () | no x
-  addpinj  (ld a pa) (b ∷ₚ tb) (ld c pc) h with dec  (c +ᵣ  a) (𝟘ᵣ) 
-  addpinj  (ld a pa) (b ∷ₚ tb) (ld c pc) () | yes x₁
-  addpinj  (ld a pa) (b ∷ₚ tb) (ld c pc) () | no x₁
-  addpinj  (ld a pa) (b ∷ₚ tb) (c ∷ₚ tc) h = ∷ₚ-≡ headeq tleq
+  addpinj  (ld a aₚ) (ld b bₚ) (c ∷ₚ tc) h with dec  (b +ᵣ a) 𝟘ᵣ
+  addpinj  (ld a aₚ) (ld b bₚ) (c ∷ₚ tc) () | yes x
+  addpinj  (ld a aₚ) (ld b bₚ) (c ∷ₚ tc) () | no x
+  addpinj  (ld a aₚ) (b ∷ₚ tb) (ld c pc) h with dec  (c +ᵣ a) 𝟘ᵣ 
+  addpinj  (ld a aₚ) (b ∷ₚ tb) (ld c pc) () | yes x₁
+  addpinj  (ld a aₚ) (b ∷ₚ tb) (ld c pc) () | no x₁
+  addpinj  (ld a aₚ) (b ∷ₚ tb) (c ∷ₚ tc) h = ∷ₚ-≡ headeq tleq
     where 
       headeq :  b  ≡ c
       headeq  = x+a=x+b→a=b a b c (∷ₚ-injh (just-injective h))
@@ -604,4 +604,4 @@ module PolynomialsProperties (A : Ring) where
                                                   ≡⟨ cong x·ₚ (sym (𝟘ₚ-multi (non𝟘ₚ tx)))⟩
                                             x·ₚ (·ₚ (non𝟘ₚ tx) 𝟘ₚ) 
                                             ∎)
-  ·ₚ-comm (non𝟘ₚ x) (non𝟘ₚ y) = ·ₚ-commhlp x y 
+  ·ₚ-comm (non𝟘ₚ x) (non𝟘ₚ y) = ·ₚ-commhlp x y  
