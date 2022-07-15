@@ -39,6 +39,7 @@ module Polynomials (A : Ring) where
   ...               | yes _ = nothing
   ...               | no ha+hb≠0 = just (ld (ha +ᵣ hb) ha+hb≠0)
 
+  infixl 5 _+ₚ_
   _+ₚ_ : (p q : Poly) → Poly 
   𝟘ₚ +ₚ q = q
   non𝟘ₚ p +ₚ 𝟘ₚ = non𝟘ₚ p
