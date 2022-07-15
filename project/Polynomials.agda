@@ -27,53 +27,53 @@ module Polynomials (A : Ring) where
 
 
 -- ////////////  ADDITION ////////////
-  addp : (x y : NonZeroPoly ) → Maybe (NonZeroPoly )
-  addp (ld ha pa) (ld hb pb) with (dec (ha +ᵣ hb) 𝟘ᵣ)
-  ...     | yes p = nothing  --vsota je 𝟘
-  ...     | no p = just (ld (ha +ᵣ hb) p)
-  addp (ld ha p) (hb ∷ₚ tb) = just ((ha +ᵣ hb) ∷ₚ tb)
-  addp (ha ∷ₚ ta) (ld b x) = addp (ld b x) (ha ∷ₚ ta)
+  addp : (p q : NonZeroPoly ) → Maybe NonZeroPoly 
+  addp (ld a a≠0) (ld b b≠0) with (dec (a +ᵣ b) 𝟘ᵣ)
+  ...     | yes _ = nothing  --vsota je 𝟘
+  ...     | no a+b≠0 = just (ld (a +ᵣ b) a+b≠0)
+  addp (ld a a≠0) (hb ∷ₚ tb) = just ((a +ᵣ hb) ∷ₚ tb)
+  addp (ha ∷ₚ ta) (ld b b≠0) = addp (ld b b≠0) (ha ∷ₚ ta)
   addp (ha ∷ₚ ta) (hb ∷ₚ tb) with (addp ta tb)
-  ...     | just res = just ((ha +ᵣ hb) ∷ₚ res)
+  ...     | just ta+tb≠0 = just ((ha +ᵣ hb) ∷ₚ ta+tb≠0)
   ...     | nothing with (dec (ha +ᵣ hb) (𝟘ᵣ))
-  ...               | yes p = nothing
-  ...               | no p = just (ld (ha +ᵣ hb) p)
+  ...               | yes _ = nothing
+  ...               | no ha+hb≠0 = just (ld (ha +ᵣ hb) ha+hb≠0)
 
-  _+ₚ_ : (a : Poly ) → (b : Poly) → Poly 
-  𝟘ₚ +ₚ b = b
-  non𝟘ₚ x +ₚ 𝟘ₚ = non𝟘ₚ x
-  non𝟘ₚ x +ₚ non𝟘ₚ y with (addp x y)
-  ... | just res = non𝟘ₚ res
+  _+ₚ_ : (p q : Poly) → Poly 
+  𝟘ₚ +ₚ q = q
+  non𝟘ₚ p +ₚ 𝟘ₚ = non𝟘ₚ p
+  non𝟘ₚ p +ₚ non𝟘ₚ q with (addp p q)
+  ... | just p+q = non𝟘ₚ p+q
   ... | nothing = 𝟘ₚ
 
 -- ////////////  INVERSE for addition ////////////
-  -ₚh :  (p : NonZeroPoly) → NonZeroPoly
-  -ₚh  (ld a x) = ld (-ᵣ a)  (n0→n0  a x)
+  -ₚh : NonZeroPoly → NonZeroPoly
+  -ₚh  (ld a a≠0) = ld (-ᵣ a)  (n0→n0 a a≠0)
   -ₚh  (x ∷ₚ p) = (-ᵣ x) ∷ₚ (-ₚh p)
 
-  -ₚ :  (p : Poly) → Poly 
+  -ₚ : Poly → Poly 
   -ₚ  𝟘ₚ = 𝟘ₚ
   -ₚ  (non𝟘ₚ p) = non𝟘ₚ (-ₚh p)
 
 -- ////////////  MULTIPLICATION ////////////
-  kmul : (a : M) → (x : NonZeroPoly) → ¬ (a ≡ 𝟘ᵣ) → (NonZeroPoly)
-  kmul a (hx ∷ₚ tx) pa = (a ·ᵣ hx) ∷ₚ (kmul a tx pa)
-  kmul a (ld hx p) pa = ld (a ·ᵣ hx) (nzd pa p)
+  kmul : (x : M) → NonZeroPoly → ¬ (x ≡ 𝟘ᵣ) → NonZeroPoly
+  kmul x (ha ∷ₚ ta) x≠0 = (x ·ᵣ ha) ∷ₚ (kmul x ta x≠0)
+  kmul x (ld a a≠0) x≠0 = ld (x ·ᵣ a) (nzd x≠0 a≠0)
 
-  ·ₖₒₙₛₜ : (a : M) → (p : Poly) -> Poly
-  ·ₖₒₙₛₜ a 𝟘ₚ = 𝟘ₚ
-  ·ₖₒₙₛₜ a (non𝟘ₚ x) with dec a 𝟘ᵣ
-  ... | yes x₁ = 𝟘ₚ
-  ... | no p¬𝟘 = non𝟘ₚ (kmul a x p¬𝟘)
+  ·ₖₒₙₛₜ : (x : M) → Poly -> Poly
+  ·ₖₒₙₛₜ _ 𝟘ₚ = 𝟘ₚ
+  ·ₖₒₙₛₜ x (non𝟘ₚ p) with dec x 𝟘ᵣ
+  ... | yes x=0 = 𝟘ₚ
+  ... | no x≠0 = non𝟘ₚ (kmul x p  x≠0)
 
-  x·ₚ : (a : Poly) → Poly
+  x·ₚ : Poly → Poly
   x·ₚ 𝟘ₚ = 𝟘ₚ
-  x·ₚ (non𝟘ₚ x) = non𝟘ₚ (𝟘ᵣ ∷ₚ x)
+  x·ₚ (non𝟘ₚ p) = non𝟘ₚ (𝟘ᵣ ∷ₚ p)
 
-  ·ₚ : (a : Poly) → (b : Poly) → Poly
-  ·ₚ 𝟘ₚ b = 𝟘ₚ
-  ·ₚ (non𝟘ₚ (ld hx p))  b = ·ₖₒₙₛₜ hx b
-  ·ₚ (non𝟘ₚ (hx ∷ₚ tx))  b = ·ₖₒₙₛₜ hx b +ₚ x·ₚ (·ₚ (non𝟘ₚ tx)  b)
+  ·ₚ : (p q : Poly) → Poly
+  ·ₚ 𝟘ₚ _ = 𝟘ₚ
+  ·ₚ (non𝟘ₚ (ld ha _))  q = ·ₖₒₙₛₜ ha q
+  ·ₚ (non𝟘ₚ (ha ∷ₚ ta))  q = ·ₖₒₙₛₜ ha q +ₚ x·ₚ (·ₚ (non𝟘ₚ ta) q)
 
 
   -- ////////////  CONSTANT AND ZERO POLYNOMIALS ////////////
@@ -85,8 +85,8 @@ module Polynomials (A : Ring) where
 
   -- ////////////  DEGREE ////////////
   degreehlp : NonZeroPoly → ℕ
-  degreehlp (ld a x) = 0
-  degreehlp (x ∷ₚ p) = 1 +ⁿ degreehlp p
+  degreehlp (ld _ _) = 0
+  degreehlp (_ ∷ₚ ta) = 1 +ⁿ degreehlp ta
 
   degree : Poly → ℕ
   degree 𝟘ₚ = 0
