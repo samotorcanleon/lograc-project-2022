@@ -148,19 +148,19 @@ module PolynomialsProperties (A : Ring) where
   ... | ()
 
   addpinj : (p q r : NonZeroPoly) → addp q p ≡ addp r p  → q ≡ r 
-  addpinj  (ld a aₚ) (ld b bₚ) (ld c cₚ) h with (dec (b +ᵣ a)) 𝟘ᵣ  | (dec (c +ᵣ a)) 𝟘ᵣ 
+  addpinj  (ld a aₚ) (ld b bₚ) (ld c cₚ) h with (dec (b +ᵣ a)) 𝟘ᵣ  | (dec (c +ᵣ  a)) 𝟘ᵣ 
   ... | yes b+a=0 | yes c+a=0 = dcong₂ ld (a+x=0=b+x→a=b  a b c b+a=0 c+a=0) refl
-  ... | no b+a≠0 | no c+a≠0 = dcong₂ ld (a+x=b+x→a=b  a b c (ld-inj hlp)) refl
+  ... | no b+a≠0 | no c+a≠0 = dcong₂ ld (a+x=b+x→a=b a b c (ld-inj hlp)) refl
     where
       hlp :  (ld (b +ᵣ a) b+a≠0) ≡  (ld (c +ᵣ a) c+a≠0)
       hlp = just-injective h
-  addpinj  (ld a aₚ) (ld b bₚ) (c ∷ₚ tc) h with dec  (b +ᵣ a) 𝟘ᵣ
-  addpinj  (ld a aₚ) (ld b bₚ) (c ∷ₚ tc) () | yes x
-  addpinj  (ld a aₚ) (ld b bₚ) (c ∷ₚ tc) () | no x
-  addpinj  (ld a aₚ) (b ∷ₚ tb) (ld c pc) h with dec  (c +ᵣ a) 𝟘ᵣ 
-  addpinj  (ld a aₚ) (b ∷ₚ tb) (ld c pc) () | yes x₁
-  addpinj  (ld a aₚ) (b ∷ₚ tb) (ld c pc) () | no x₁
-  addpinj  (ld a aₚ) (b ∷ₚ tb) (c ∷ₚ tc) h = ∷ₚ-≡ headeq tleq
+  addpinj  (ld a pa) (ld b pb) (c ∷ₚ tc) h with dec  (b +ᵣ a) 𝟘ᵣ
+  addpinj  (ld a pa) (ld b pb) (c ∷ₚ tc) () | yes x
+  addpinj  (ld a pa) (ld b pb) (c ∷ₚ tc) () | no x
+  addpinj  (ld a pa) (b ∷ₚ tb) (ld c pc) h with dec  (c +ᵣ a) 𝟘ᵣ
+  addpinj  (ld a pa) (b ∷ₚ tb) (ld c pc) () | yes x₁
+  addpinj  (ld a pa) (b ∷ₚ tb) (ld c pc) () | no x₁
+  addpinj  (ld a pa) (b ∷ₚ tb) (c ∷ₚ tc) h = ∷ₚ-≡ headeq tleq
     where 
       headeq :  b  ≡ c
       headeq  = x+a=x+b→a=b a b c (∷ₚ-injh (just-injective h))
@@ -172,45 +172,45 @@ module PolynomialsProperties (A : Ring) where
   ... | res rewrite res with ldtl⊥sym  tc+ta tc eq
   ... | ()
   addpinj  (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) h | nothing | [ eq ] with dec  (hc +ᵣ a) (𝟘ᵣ)
-  addpinj  (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) () | nothing | [ eq ] | yes x
-  addpinj  (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) () | nothing | [ eq ] | no x
+  addpinj  (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) () | nothing | [ eq ] | yes hc+a=0
+  addpinj  (a ∷ₚ ta) (ld b pb) (hc ∷ₚ tc) () | nothing | [ eq ] | no hc+a≠0
   addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (ld c pc) h with addp tb ta | inspect (addp tb) ta
   ... | just tb+ta | [ eq ] with (∷ₚ-injt(just-injective h))
-  ... | res rewrite res  with ldtl⊥sym  ta tb eq 
+  ... | res rewrite res with ldtl⊥sym  ta tb eq 
   ... | ()
   addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (ld c pc) h | nothing | [ eq ] with dec  (b +ᵣ a) (𝟘ᵣ) 
   addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (ld c pc) () | nothing | [ eq ] | yes x
   addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (ld c pc) () | nothing | [ eq ] | no x
   addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) h with addp tb ta | inspect (addp tb) ta | addp tc ta | inspect (addp tc) ta  
-  ... | just x | [ eq ] | just y | [ eq₁ ] = ∷ₚ-≡ hlp2 hlp
+  ... | just tb+ta | [ eq₁ ] | just tc+ta | [ eq₂ ] = ∷ₚ-≡ hlp2 hlp
     where 
       hlp2 : b ≡ c 
       hlp2 = a+x=b+x→a=b a b c (∷ₚ-injh (just-injective h))
-      hlp3 : x ≡ y 
+      hlp3 : tb+ta ≡ tc+ta
       hlp3 = (∷ₚ-injt (just-injective h))
-      hlp4 : x ≡ y → just x ≡ just y
+      hlp4 : tb+ta ≡ tc+ta → just tb+ta ≡ just tc+ta
       hlp4 refl = refl
       hlp : tb ≡ tc 
-      hlp = addpinj ta tb tc (trans eq (trans (hlp4 hlp3)(sym eq₁)) )
-  ... | just x | [ eq ] | nothing | [ eq₁ ] with dec   (c +ᵣ a) (𝟘ᵣ)
-  addpinj (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) () | just x | [ eq ] | nothing | [ eq₁ ] | yes x₁
-  addpinj (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) () | just x | [ eq ] | nothing | [ eq₁ ] | no x₁
-  addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) h | nothing | [ eq ] | just x | [ eq₁ ] with dec   (b +ᵣ a) (𝟘ᵣ)
-  addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) () | nothing | [ eq ] | just x | [ eq₁ ] | yes x₁
-  addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) () | nothing | [ eq ] | just x | [ eq₁ ] | no x₁
-  addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) h | nothing | [ eq ] | nothing | [ eq₁ ] with dec  (b +ᵣ a) (𝟘ᵣ) | dec (c +ᵣ a) (𝟘ᵣ)
-  ... | yes x | yes x₁ = ∷ₚ-≡ hlp2 (sym hlp)
+      hlp = addpinj ta tb tc (trans eq₁ (trans (hlp4 hlp3)(sym eq₂)) )
+  ... | just tb+ta | [ eq₁ ] | nothing | [ eq₂ ] with dec   (c +ᵣ a) 𝟘ᵣ
+  addpinj (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) () | just tb+ta | [ eq₁ ] | nothing | [ eq₂ ] | yes c+a=0
+  addpinj (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) () | just tb+ta | [ eq₁ ] | nothing | [ eq₂ ] | no c+a≠0
+  addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) h | nothing | [ eq₁ ] | just tc+ta | [ eq₂ ] with dec (b +ᵣ a) 𝟘ᵣ
+  addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) () | nothing | [ eq₁ ] | just tc+ta | [ eq₂ ] | yes b+a=0
+  addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) () | nothing | [ eq₁ ] | just tc+ta | [ eq₂ ] | no b+a≠0
+  addpinj  (a ∷ₚ ta) (b ∷ₚ tb) (c ∷ₚ tc) h | nothing | [ eq₁ ] | nothing | [ eq₂ ] with dec  (b +ᵣ a) 𝟘ᵣ | dec (c +ᵣ a) 𝟘ᵣ
+  ... | yes b+a=0 | yes c+a=0 = ∷ₚ-≡ hlp2 (sym hlp)
     where   
       hlp2 : b ≡ c 
-      hlp2 = a+x=0=b+x→a=b a b c x x₁
+      hlp2 = a+x=0=b+x→a=b a b c b+a=0 c+a=0
       hlp : tc ≡ tb 
-      hlp = addpinj ta tc tb (trans eq₁  (sym eq))
-  ... | no x | no x₁ = ∷ₚ-≡ hlp2 (sym hlp)
+      hlp = addpinj ta tc tb (trans eq₂  (sym eq₁))
+  ... | no b+a≠0 | no c+a≠0 = ∷ₚ-≡ hlp2 (sym hlp)
     where   
       hlp2 : b ≡ c 
       hlp2 = (a+x=b+x→a=b a b c  (ld-inj (just-injective  h)))
       hlp : tc ≡ tb 
-      hlp = addpinj ta tc tb (trans eq₁  (sym eq))
+      hlp = addpinj ta tc tb (trans eq₂  (sym eq₁))
 
 
 -- ////////////  left inverse for addition ////////////
