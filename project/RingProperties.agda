@@ -86,15 +86,15 @@ module RingProperties {A : Ring}  where
 
   a+x=b+x→a=b :  (x a b : M ) → a + x ≡   b + x  → a ≡ b 
   a+x=b+x→a=b  x a b h = begin  a  
-                                                  ≡⟨ sym (hlp4 x a) ⟩
+                                                  ≡⟨ sym (hlp x a) ⟩
                                 - x + ( x + a) 
                                                   ≡⟨ cong₂  (_+_ ) refl (a+x=b+x→x+a=x+b x a b h) ⟩
                                 - x + ( x + b) 
-                                                  ≡⟨ hlp4 x b ⟩
+                                                  ≡⟨ hlp x b ⟩
                                 b ∎
     where 
-      hlp4 : (x a : M ) → - x + (x + a) ≡  a
-      hlp4 x a =  begin - x + (x + a)   
+      hlp : (x a : M ) → - x + (x + a) ≡  a
+      hlp x a =  begin - x + (x + a)   
                                         ≡⟨ sym((+-assoc ) (- x) x a) ⟩
                         - x + x + a     
                                         ≡⟨ cong₂ (_+_) ((-left ) x) refl ⟩
@@ -128,7 +128,7 @@ module RingProperties {A : Ring}  where
                           𝟘 ∎
 
   n0→n0 : (a : M) → ¬ (a ≡ 𝟘) → ¬ (- a ≡ 𝟘) 
-  n0→n0 a = contraposition (hlphlp a)
+  n0→n0 a = contraposition (hlp a)
     where 
-      hlphlp :  (a : M) → (- a ≡ 𝟘) → (a ≡ 𝟘) 
-      hlphlp  a p = trans (sym (trans (a=b→a+x=b+x a (- a) 𝟘 p) ((ω-left ) a))) ((-left ) a)
+      hlp :  (a : M) → (- a ≡ 𝟘) → (a ≡ 𝟘) 
+      hlp  a p = trans (sym (trans (a=b→a+x=b+x a (- a) 𝟘 p) ((ω-left ) a))) ((-left ) a)
