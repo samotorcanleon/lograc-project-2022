@@ -117,22 +117,22 @@ module PolynomialsProperties (A : Ring) where
   ∷ₚ-injt :  ∀ {a b : M } → ∀ {p q : NonZeroPoly} → (a ∷ₚ p) ≡ (b ∷ₚ q) →  p ≡ q 
   ∷ₚ-injt refl = refl
 
-  ld-inj :   ∀ {a b : M } → ∀ {aₚ bₚ} → (ld  a aₚ) ≡ (ld b bₚ) → a ≡ b
+  ld-inj :   ∀ {a b : M } → ∀ {a≠0 b≠0} → (ld  a a≠0) ≡ (ld b b≠0) → a ≡ b
   ld-inj refl = refl
 
   ∷ₚ-≡ :  {a b : M } → ∀ {p q : NonZeroPoly} → a ≡ b → p ≡ q  → (a ∷ₚ p) ≡ (b ∷ₚ q)
   ∷ₚ-≡  refl refl = refl 
 
-  ld-≡ :  ∀ {a b : M } → ∀ {aₚ bₚ} → a ≡ b → (ld  a aₚ) ≡ (ld b bₚ)
-  ld-≡ {a}{b}{aₚ}{bₚ} p with (dec) a (𝟘ᵣ)
-  ld-≡  {𝟘ᵣ} {𝟘ᵣ} {aₚ} {bₚ} refl | yes refl = refl
-  ld-≡  {a} {a} {aₚ} {bₚ} refl | no x = refl
+  ld-≡ :  ∀ {a b : M } → ∀ {a≠0 b≠0} → a ≡ b → (ld  a a≠0) ≡ (ld b b≠0)
+  ld-≡ {a}{b}{a≠0}{b≠0} p with (dec) a (𝟘ᵣ)
+  ld-≡  {𝟘ᵣ} {𝟘ᵣ} {a≠0} {b≠0} refl | yes refl = refl
+  ld-≡  {a} {a} {a≠0} {b≠0} refl | no x = refl
 
   ldtl⊥ :  (p q : NonZeroPoly) → addp p q  ≡  just p → ⊥
-  ldtl⊥  (ld a aₚ) (ld b bₚ) r with dec  (a +ᵣ b) 𝟘ᵣ
-  ... | no a+b≠0 with bₚ (x+a=x→a=0  a b (ld-inj (just-injective r)))
+  ldtl⊥  (ld a a≠0) (ld b b≠0) r with dec  (a +ᵣ b) 𝟘ᵣ
+  ... | no a+b≠0 with b≠0 (x+a=x→a=0  a b (ld-inj (just-injective r)))
   ... | ()
-  ldtl⊥ (hp ∷ₚ tp) (ld a aₚ) r  with ¬-elim aₚ (a+x=x→a=0 hp a (∷ₚ-injh (just-injective r)) )
+  ldtl⊥ (hp ∷ₚ tp) (ld a a≠0) r  with ¬-elim a≠0 (a+x=x→a=0 hp a (∷ₚ-injh (just-injective r)) )
   ... | ()
   ldtl⊥ (hp ∷ₚ tp) (hq ∷ₚ tq) r with addp tp tq | inspect (addp tp) tq  
   ... | just tp+tq | [ eq ] with   (∷ₚ-injt (just-injective r))
@@ -148,7 +148,7 @@ module PolynomialsProperties (A : Ring) where
   ... | ()
 
   addpinj : (p q r : NonZeroPoly) → addp q p ≡ addp r p  → q ≡ r 
-  addpinj  (ld a aₚ) (ld b bₚ) (ld c cₚ) h with (dec (b +ᵣ a)) 𝟘ᵣ  | (dec (c +ᵣ  a)) 𝟘ᵣ 
+  addpinj  (ld a a≠0) (ld b b≠0) (ld c cₚ) h with (dec (b +ᵣ a)) 𝟘ᵣ  | (dec (c +ᵣ  a)) 𝟘ᵣ 
   ... | yes b+a=0 | yes c+a=0 = dcong₂ ld (a+x=0=b+x→a=b  a b c b+a=0 c+a=0) refl
   ... | no b+a≠0 | no c+a≠0 = dcong₂ ld (a+x=b+x→a=b a b c (ld-inj hlp)) refl
     where
@@ -215,24 +215,24 @@ module PolynomialsProperties (A : Ring) where
 
 -- ////////////  left inverse for addition ////////////
   -ₚh-empt :  (p : NonZeroPoly) → addp (-ₚh p) p ≡ nothing
-  -ₚh-empt  (ld a x) with dec  ( (-ᵣ a) +ᵣ a) (𝟘ᵣ)
-  ... | yes x₁ = refl
-  ... | no x₁ with ¬-elim  x₁ ((-left ) a) 
+  -ₚh-empt  (ld a a≠0) with dec  ( (-ᵣ a) +ᵣ a) (𝟘ᵣ)
+  ... | yes -a+a=0 = refl
+  ... | no -a+a≠0 with ¬-elim -a+a≠0 ((-left ) a) 
   ... | () 
-  -ₚh-empt  (x ∷ₚ p) with -ₚh-empt p  | addp (-ₚh p) p | inspect (addp (-ₚh p)) p
-  ... | h | nothing | [ i ] with dec ( (-ᵣ x) +ᵣ x) (𝟘ᵣ)
-  ... | yes x₁ = refl
-  ... | no x₁ with ¬-elim  x₁ ((-left ) x) 
+  -ₚh-empt  (hp ∷ₚ tp) with -ₚh-empt tp  | addp (-ₚh tp) tp | inspect (addp (-ₚh tp)) tp
+  ... | h | nothing | [ i ] with dec ( (-ᵣ hp) +ᵣ hp) (𝟘ᵣ)
+  ... | yes -hp+hp=0 = refl
+  ... | no -hp+hp≠0 with ¬-elim -hp+hp≠0 ((-left ) hp) 
   ... | ()
-  -ₚh-empt  (x ∷ₚ p) | h | just x₁ | [ i ] with justnoth⊥ (trans (sym h) i)
+  -ₚh-empt  (hp ∷ₚ tp) | h | just -htp+tp | [ i ] with justnoth⊥ (trans (sym h) i)
   ... | ()
 
   -ₚ-left  :  (p : Poly) → (-ₚ p) +ₚ p ≡ 𝟘ₚ
   -ₚ-left  𝟘ₚ = refl
-  -ₚ-left  (non𝟘ₚ x) with addp (-ₚh x) x | inspect (addp (-ₚh x)) x
-  ... | just p | [ i ] with justnoth⊥ (sym(trans (sym i) (-ₚh-empt x )) )
+  -ₚ-left  (non𝟘ₚ p) with addp (-ₚh p) p | inspect (addp (-ₚh p)) p
+  ... | just -hp+p | [ i ] with justnoth⊥ (sym(trans (sym i) (-ₚh-empt p )) )
   ... | ()
-  -ₚ-left  (non𝟘ₚ x)  | nothing | [ i ] = refl
+  -ₚ-left  (non𝟘ₚ p)  | nothing | [ i ] = refl
 
 -- ////////////  constant polynomial is left unit for addition ////////////
   𝟘ₚ-left  : (p : Poly) → 𝟘ₚ +ₚ p ≡ p
@@ -241,31 +241,31 @@ module PolynomialsProperties (A : Ring) where
 -- ////////////  DEGREE proofs ////////////
 
   -- multiplication by constant doesn't change degree
-  kmul-deg : (a : M) → (p : NonZeroPoly) → (x : ¬ (a ≡ 𝟘ᵣ)) → degreehlp (kmul a p x) ≡ degreehlp p
-  kmul-deg a (ld a₁ x₁) x = refl
-  kmul-deg a (x₁ ∷ₚ p) x = cong suc (kmul-deg a p x)
+  kmul-deg : (a : M) → (p : NonZeroPoly) → (a≠0 : ¬ (a ≡ 𝟘ᵣ)) → degreehlp (kmul a p a≠0) ≡ degreehlp p
+  kmul-deg a (ld b b≠0) a≠0 = refl
+  kmul-deg a (hp ∷ₚ tp) a≠0 = cong suc (kmul-deg a tp a≠0)
 
   ·ₖₒₙₛₜ-degree : (a : M) → (p : Poly) → ¬ (a ≡ 𝟘ᵣ) →  degree (·ₖₒₙₛₜ a p) ≡ (degree p)
-  ·ₖₒₙₛₜ-degree a 𝟘ₚ x = refl
-  ·ₖₒₙₛₜ-degree a (non𝟘ₚ h) pr with dec a 𝟘ᵣ
-  ...                                 | yes x with (pr x)
+  ·ₖₒₙₛₜ-degree a 𝟘ₚ a≠0 = refl
+  ·ₖₒₙₛₜ-degree a (non𝟘ₚ p) a≠0 with dec a 𝟘ᵣ
+  ...                                 | yes a=0 with (a≠0 a=0)
   ...                                          | ()
-  ·ₖₒₙₛₜ-degree a (non𝟘ₚ p) pr      | no x = kmul-deg a p pr
+  ·ₖₒₙₛₜ-degree a (non𝟘ₚ p) a≠0        | no a≠0 = kmul-deg a p a≠0
 
   -- multiplication by x increases degree by 1  (NONZERO POLYNOMIALS)
-  x·ₚ-deg : (a : NonZeroPoly) → degree (x·ₚ (non𝟘ₚ a)) ≡ 1 +ⁿ (degree (non𝟘ₚ a))
-  x·ₚ-deg (ld a x) = refl
-  x·ₚ-deg (x ∷ₚ a) = cong suc refl
+  x·ₚ-deg : (p : NonZeroPoly) → degree (x·ₚ (non𝟘ₚ p)) ≡ 1 +ⁿ (degree (non𝟘ₚ p))
+  x·ₚ-deg (ld a a≠0) = refl
+  x·ₚ-deg (hp ∷ₚ tp) = cong suc refl
 
 -- ////////////  MULTIPLICATION - commutativity  ////////////
 -- Tip for future agda conquerors: always call all induction steps in the outer most with abstraction otherwise
 -- agda will shove its termination checking problems and surprise you with them when you least expect
-  merge :  (hb : M) → (tb : NonZeroPoly ) → (pb : ¬ (hb ≡ (𝟘ᵣ))) → (non𝟘ₚ (hb ∷ₚ tb) ≡ non𝟘ₚ (ld hb pb) +ₚ (x·ₚ (non𝟘ₚ tb)))
-  merge h t p = cong non𝟘ₚ (cong₂ _∷ₚ_ (sym (𝟘-right h)) refl)
+  merge :  (a : M) → (p : NonZeroPoly ) → (a≠0 : ¬ (a ≡ (𝟘ᵣ))) → (non𝟘ₚ (a ∷ₚ p) ≡ non𝟘ₚ (ld a a≠0) +ₚ (x·ₚ (non𝟘ₚ p)))
+  merge a p a≠0 = cong non𝟘ₚ (cong₂ _∷ₚ_ (sym (𝟘-right a)) refl)
 
   𝟘ₚ-multi : (p : Poly ) → ·ₚ p 𝟘ₚ ≡ 𝟘ₚ
   𝟘ₚ-multi 𝟘ₚ = refl
-  𝟘ₚ-multi (non𝟘ₚ (ld a x)) = refl
+  𝟘ₚ-multi (non𝟘ₚ (ld a a≠0)) = refl
   𝟘ₚ-multi (non𝟘ₚ (x ∷ₚ tx)) = sym (begin 𝟘ₚ  ≡⟨ refl ⟩ x·ₚ 𝟘ₚ ≡⟨ cong  x·ₚ (sym (𝟘ₚ-multi (non𝟘ₚ tx))) ⟩ x·ₚ (·ₚ (non𝟘ₚ tx) 𝟘ₚ) ∎)
 
   m𝟘𝟘 : (k : M) → (·ₖₒₙₛₜ  k 𝟘ₚ) ≡ 𝟘ₚ
@@ -273,7 +273,7 @@ module PolynomialsProperties (A : Ring) where
   ... | yes x = refl
   ... | no x = refl
 
-  -- 1ₚ is a multiplication unit
+  -- 1ₚ is a\ multiplication unit
   kmulres : (p : NonZeroPoly ) → kmul 𝟙ᵣ p 𝟙ᵣ≠𝟘ᵣ ≡ p
   kmulres (ld a x) = dcong₂ ld (𝟙ᵣ-left a) refl
   kmulres (x ∷ₚ p) = cong₂ _∷ₚ_ (𝟙ᵣ-left x) (kmulres p)
@@ -604,4 +604,4 @@ module PolynomialsProperties (A : Ring) where
                                                   ≡⟨ cong x·ₚ (sym (𝟘ₚ-multi (non𝟘ₚ tx)))⟩
                                             x·ₚ (·ₚ (non𝟘ₚ tx) 𝟘ₚ) 
                                             ∎)
-  ·ₚ-comm (non𝟘ₚ x) (non𝟘ₚ y) = ·ₚ-commhlp x y  
+  ·ₚ-comm (non𝟘ₚ x) (non𝟘ₚ y) = ·ₚ-commhlp x y   
